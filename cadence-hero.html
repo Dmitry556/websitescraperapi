@@ -1,0 +1,3320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadence - Make your CAD files talk</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;700;800;900&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary: #0A0A0A;
+            --accent: #2DA58A;
+            --accent-glow: #53DDB4;
+            --background: #FFFFFF;
+            --surface: #F2F4F6;
+            --gradient-1: #E6F2EF;
+            --gradient-2: #DFF0EB;
+            --gradient-3: #CFEFE7;
+            --transition: cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--background);
+            color: var(--primary);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+        
+        /* Navigation */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 1.25rem 2rem;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            animation: slideDown 0.8s var(--transition);
+        }
+        
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+        
+        .logo-mark {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-glow));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 900;
+            font-size: 1.25rem;
+        }
+        
+        .nav-cta {
+            background: var(--primary);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.25s var(--transition);
+        }
+        
+        .nav-cta::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .nav-cta:hover::before {
+            left: 100%;
+        }
+        
+        .nav-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Hero Section */
+        .hero {
+            padding: 8rem 2rem 4rem;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+        
+        .hero-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+        
+        /* Content */
+        .hero-content {
+            max-width: 580px;
+        }
+        
+        .hero-headline {
+            font-size: 3.5rem;
+            font-weight: 900;
+            line-height: 0.98;
+            letter-spacing: -0.05em;
+            margin-bottom: 1.5rem;
+            opacity: 0;
+            animation: fadeInUp 0.8s var(--transition) forwards;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, var(--accent), var(--accent-glow));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
+        }
+        
+        .gradient-text::after {
+            content: attr(data-text);
+            position: absolute;
+            left: 0;
+            top: 0;
+            z-index: -1;
+            background: linear-gradient(135deg, var(--accent), var(--accent-glow));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: blur(20px);
+            opacity: 0.5;
+        }
+        
+        .hero-subheading {
+            font-size: 1.25rem;
+            font-weight: 450;
+            line-height: 1.6;
+            letter-spacing: -0.02em;
+            color: #666;
+            margin-bottom: 2.5rem;
+            opacity: 0;
+            animation: fadeInUp 0.8s 100ms var(--transition) forwards;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            opacity: 0;
+            animation: fadeInUp 0.8s 200ms var(--transition) forwards;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.25s var(--transition);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .btn-primary::after {
+            content: '→';
+            transition: transform 0.25s var(--transition);
+        }
+        
+        .btn-primary:hover::after {
+            transform: translateX(4px);
+        }
+        
+        .btn-secondary {
+            color: var(--primary);
+            padding: 1rem 2rem;
+            font-weight: 600;
+            text-decoration: none;
+            position: relative;
+            transition: all 0.25s var(--transition);
+        }
+        
+        .btn-secondary::after {
+            content: '';
+            position: absolute;
+            bottom: 0.75rem;
+            left: 2rem;
+            right: 2rem;
+            height: 2px;
+            background: var(--primary);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.25s var(--transition);
+        }
+        
+        .btn-secondary:hover::after {
+            transform: scaleX(1);
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Visual - MacBook Mockup */
+        .hero-visual {
+            position: relative;
+            opacity: 0;
+            animation: deviceEntry 1.2s 300ms var(--transition) forwards;
+        }
+        
+        @keyframes deviceEntry {
+            from {
+                opacity: 0;
+                transform: translateX(40px) rotateY(-10deg);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0) rotateY(0);
+            }
+        }
+        
+        .device-mockup {
+            width: 100%;
+            max-width: 650px;
+            position: relative;
+            animation: float 8s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-15px);
+            }
+        }
+        
+        .device-frame {
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 16px;
+            padding: 8px;
+            box-shadow: 
+                0 4px 20px rgba(0, 0, 0, 0.04),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        
+        .device-frame::before {
+            content: '';
+            position: absolute;
+            inset: -40px;
+            background: radial-gradient(circle at center, #2DA58A, transparent);
+            opacity: 0.08;
+            filter: blur(60px);
+            z-index: -1;
+        }
+        
+        .device-screen {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: 10px;
+            overflow: hidden;
+            aspect-ratio: 4/3;
+            min-height: 500px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Minimal Chat Interface */
+        .chat-interface {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            background: transparent;
+            padding: 2rem;
+            font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            position: relative;
+            overflow-y: auto;
+            /* Hide scrollbar completely */
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE/Edge */
+        }
+        
+        /* Hide scrollbar for WebKit browsers */
+        .chat-interface::-webkit-scrollbar {
+            display: none;
+        }
+        
+        
+        .chat-messages {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            max-width: 100%;
+            flex: 1;
+            padding-top: 1rem;
+        }
+        
+        .message {
+            opacity: 0;
+            animation: messageIn 0.5s var(--transition) forwards;
+        }
+        
+        .message-user {
+            text-align: right;
+            animation-delay: 1s;
+        }
+        
+        .user-bubble {
+            display: inline-block;
+            color: #2DA58A;
+            font-weight: 500;
+            font-size: 0.95rem;
+            padding: 0.75rem 1rem;
+            border-radius: 20px;
+            background: rgba(45, 165, 138, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+            max-width: 85%;
+        }
+        
+        .typing-text {
+            overflow: hidden;
+            white-space: nowrap;
+            width: 0;
+            animation: typeWriter 0.5s 1.5s steps(30) forwards;
+        }
+        
+        @keyframes typeWriter {
+            to {
+                width: 100%;
+            }
+        }
+        
+        .context-indicator {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 0.5rem;
+            opacity: 0;
+            animation: fadeIn 0.5s 2.2s var(--transition) forwards;
+        }
+        
+        .context-file {
+            font-family: 'Courier New', monospace;
+            background: rgba(0, 0, 0, 0.05);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+        }
+        
+        .message-ai {
+            text-align: left;
+        }
+        
+        .typing-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 0.75rem 1rem;
+            opacity: 0;
+            animation: messageIn 0.3s 2.2s var(--transition) forwards,
+                       messageOut 0.3s 2.8s var(--transition) forwards;
+        }
+        
+        
+        .typing-dot {
+            width: 4px;
+            height: 4px;
+            background: #000000;
+            border-radius: 50%;
+            animation: typing 1.2s infinite;
+        }
+        
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes typing {
+            0%, 60%, 100% {
+                transform: translateY(0);
+                opacity: 0.3;
+            }
+            30% {
+                transform: translateY(-8px);
+                opacity: 1;
+            }
+        }
+        
+        .message-ai-response {
+            opacity: 0;
+            animation: messageIn 0.4s 3.2s var(--transition) forwards;
+        }
+        
+        .ai-response {
+            display: inline-block;
+            color: #222;
+            font-weight: 500;
+            font-size: 15px;
+            padding: 0.75rem 1rem;
+            border-radius: 20px;
+            background: rgba(0, 0, 0, 0.03);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+            max-width: 85%;
+            line-height: 1.6;
+        }
+        
+        .ai-response .line {
+            opacity: 1;
+        }
+        
+        .ai-response-content {
+            opacity: 0;
+            animation: fadeIn 0.3s 3.2s var(--transition) forwards;
+        }
+        
+        .technical-term {
+            font-family: 'Courier New', monospace;
+            background: #F2F2F2;
+            padding: 0.1rem 0.25rem;
+            border-radius: 4px;
+            font-size: 0.9em;
+            color: #333;
+        }
+        
+        .file-context {
+            font-style: italic;
+            color: #666;
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+            font-weight: 400;
+        }
+        
+        .source-reference {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            font-size: 0.8rem;
+            color: #666;
+            opacity: 0;
+            animation: fadeIn 0.4s 6.5s var(--transition) forwards;
+        }
+        
+        .cad-icon {
+            width: 14px;
+            height: 14px;
+            background: rgba(45, 165, 138, 0.2);
+            border-radius: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            color: #2DA58A;
+        }
+        
+        .chat-badge {
+            display: inline-flex;
+            align-items: center;
+            margin-top: 0.75rem;
+            font-size: 0.8rem;
+            color: #999;
+            opacity: 0;
+            animation: fadeIn 0.4s 6.8s var(--transition) forwards;
+            font-weight: 400;
+            font-style: italic;
+        }
+        
+        
+        @keyframes messageIn {
+            from {
+                opacity: 0;
+                transform: translate3d(0, 8px, 0) scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: translate3d(0, 0, 0) scale(1);
+            }
+        }
+        
+        @keyframes messageOut {
+            from {
+                opacity: 1;
+                transform: translate3d(0, 0, 0) scale(1);
+            }
+            to {
+                opacity: 0;
+                transform: translate3d(0, -4px, 0) scale(0.98);
+            }
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translate3d(0, 0, 0);
+            }
+            to {
+                opacity: 1;
+                transform: translate3d(0, 0, 0);
+            }
+        }
+        
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+                transform: translate3d(0, 0, 0);
+            }
+            to {
+                opacity: 0;
+                transform: translate3d(0, 0, 0);
+            }
+        }
+        
+        /* GPU Acceleration for all animated elements */
+        .message,
+        .typing-indicator,
+        .ai-response-content,
+        .source-reference,
+        .chat-badge,
+        .context-indicator {
+            will-change: transform, opacity;
+            backface-visibility: hidden;
+            transform: translate3d(0, 0, 0);
+        }
+        
+        /* Floating Orb */
+        .floating-orb {
+            position: absolute;
+            top: 10%;
+            right: 10%;
+            width: 120px;
+            height: 120px;
+            opacity: 0;
+            animation: orbIn 1s 0.5s var(--transition) forwards, orbit 10s linear infinite;
+        }
+        
+        @keyframes orbIn {
+            to {
+                opacity: 1;
+            }
+        }
+        
+        @keyframes orbit {
+            from {
+                transform: rotate(0deg) translateX(40px) rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg) translateX(40px) rotate(-360deg);
+            }
+        }
+        
+        .orb {
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 30% 30%, var(--accent-glow), var(--accent));
+            border-radius: 50%;
+            filter: blur(20px);
+            opacity: 0.5;
+            animation: pulse 3s ease-in-out infinite;
+        }
+        
+        .orb-inner {
+            position: absolute;
+            inset: 20%;
+            background: radial-gradient(circle at center, white, var(--accent-glow));
+            border-radius: 50%;
+            filter: blur(10px);
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 0.5;
+            }
+            50% {
+                transform: scale(1.2);
+                opacity: 0.8;
+            }
+        }
+        
+        /* How it Works Section - Large Animated Cards */
+        #how-it-works {
+            background: var(--background);
+            padding: 8rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .how-it-works-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .section-title {
+            font-family: 'IBM Plex Sans', sans-serif;
+            font-weight: 700;
+            font-size: 2.5rem;
+            line-height: 1.2;
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 4rem;
+            letter-spacing: -0.02em;
+            position: relative;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent), var(--accent-glow));
+        }
+        
+        .process-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 4rem;
+            position: relative;
+        }
+        
+        .process-step {
+            display: flex;
+            align-items: center;
+            gap: 4rem;
+            min-height: 400px;
+            opacity: 0;
+            transform: translateY(60px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+        }
+        
+        .process-step.animate-in {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .process-step:nth-child(even) {
+            flex-direction: row-reverse;
+        }
+        
+        .process-step:nth-child(even) .step-content {
+            text-align: right;
+        }
+        
+        .step-visual {
+            flex: 1;
+            position: relative;
+            height: 300px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, 
+                rgba(45, 165, 138, 0.08), 
+                rgba(83, 221, 180, 0.08));
+            border: 1px solid rgba(0, 0, 0, 0.04);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            transition: all 0.5s var(--transition);
+        }
+        
+        /* CAD Parser Mockup */
+        .cad-parser-mockup {
+            width: 100%;
+            max-width: 480px;
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 
+                0 4px 12px rgba(0, 0, 0, 0.06),
+                0 1px 3px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        .mockup-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+        }
+        
+        .file-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #000000;
+            font-family: 'IBM Plex Sans', monospace;
+        }
+        
+        .file-badge {
+            background: rgba(45, 165, 138, 0.1);
+            color: #2DA58A;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            border: 1px solid rgba(45, 165, 138, 0.2);
+        }
+        
+        .parsing-log {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .log-line {
+            font-size: 0.9rem;
+            color: #444;
+            font-family: 'IBM Plex Sans', monospace;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .log-line.animate {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .log-line:first-child {
+            color: #2DA58A;
+            font-weight: 500;
+        }
+        
+        /* Contextual Memory Mockup */
+        .contextual-memory-mockup {
+            width: 100%;
+            max-width: 600px;
+            background: #FFFFFF;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.08),
+                0 2px 8px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .contextual-memory-mockup.looping .file-title {
+            animation: typewriterIn 0.8s ease-out 0.5s both;
+        }
+        
+        .contextual-memory-mockup.looping .file-badge {
+            animation: slideInFromRight 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.8s both;
+        }
+        
+        .contextual-memory-mockup.looping .central-node {
+            animation: nodeScaleIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 1.3s both, centralNodeGlow 2s ease-in-out 1.9s infinite;
+        }
+        
+        .contextual-memory-mockup.looping .node-a1 {
+            animation: nodeGlowIn 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 1.5s both;
+        }
+        
+        .contextual-memory-mockup.looping .node-a2 {
+            animation: nodeGlowIn 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 1.8s both;
+        }
+        
+        .contextual-memory-mockup.looping .node-a3 {
+            animation: nodeGlowIn 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 2.1s both;
+        }
+        
+        .contextual-memory-mockup.looping .line-1 {
+            animation: lineDrawIn 0.6s ease-out 2.4s both;
+        }
+        
+        .contextual-memory-mockup.looping .line-2 {
+            animation: lineDrawIn 0.6s ease-out 2.6s both;
+        }
+        
+        .contextual-memory-mockup.looping .line-3 {
+            animation: lineDrawIn 0.6s ease-out 2.8s both;
+        }
+        
+        .contextual-memory-mockup.looping .details-panel {
+            animation: panelExpand 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 3.4s both;
+        }
+        
+        .contextual-memory-mockup.looping .detail-item:nth-child(1) {
+            animation: terminalType 0.4s ease-out 4.0s both;
+        }
+        
+        .contextual-memory-mockup.looping .detail-item:nth-child(2) {
+            animation: terminalType 0.4s ease-out 4.2s both;
+        }
+        
+        .contextual-memory-mockup.looping .detail-item:nth-child(3) {
+            animation: terminalType 0.4s ease-out 4.4s both;
+        }
+        
+        .contextual-memory-mockup.looping .detail-item:nth-child(4) {
+            animation: terminalType 0.4s ease-out 4.6s both;
+        }
+        
+        .contextual-memory-mockup.looping .status-line {
+            animation: statusConfirm 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 5.2s both;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes nodeScaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        @keyframes nodeGlowIn {
+            0% {
+                opacity: 0;
+                transform: scale(0);
+                box-shadow: 0 0 0 rgba(45, 165, 138, 0);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.05);
+                box-shadow: 0 0 12px rgba(45, 165, 138, 0.4);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+                box-shadow: 
+                    0 2px 8px rgba(45, 165, 138, 0.15),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            }
+        }
+        
+        @keyframes lineDrawIn {
+            from {
+                opacity: 0;
+                stroke-dashoffset: 100;
+            }
+            to {
+                opacity: 1;
+                stroke-dashoffset: 0;
+            }
+        }
+        
+        @keyframes slideInFromRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes typewriterIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .relationship-graph {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 20px;
+        }
+        
+        .graph-container {
+            flex: 1;
+            position: relative;
+            height: 180px;
+            background: rgba(0, 0, 0, 0.02);
+            border-radius: 12px;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+        }
+        
+        .graph-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+            background-size: 12px 12px;
+            opacity: 0;
+            transition: opacity 0.6s ease;
+        }
+        
+        .contextual-memory-mockup.looping .graph-container::before {
+            animation: gridFadeIn 0.6s ease-out 0.2s both;
+        }
+        
+        @keyframes gridFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes centralNodeGlow {
+            0%, 100% {
+                box-shadow: 
+                    0 4px 16px rgba(45, 165, 138, 0.3),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+                    0 0 0 rgba(45, 165, 138, 0);
+            }
+            50% {
+                box-shadow: 
+                    0 4px 16px rgba(45, 165, 138, 0.3),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+                    0 0 20px rgba(45, 165, 138, 0.6);
+            }
+        }
+        
+        @keyframes panelExpand {
+            0% {
+                opacity: 0;
+                transform: translateX(40px) scale(0.8);
+            }
+            60% {
+                opacity: 1;
+                transform: translateX(-5px) scale(1.02);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0) scale(1);
+            }
+        }
+        
+        @keyframes terminalType {
+            0% {
+                opacity: 0;
+                transform: translateX(15px);
+                filter: blur(1px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+                filter: blur(0);
+            }
+        }
+        
+        @keyframes statusConfirm {
+            0% {
+                opacity: 0;
+                transform: translateY(20px) scale(0.9);
+                text-shadow: 0 0 0 rgba(45, 165, 138, 0);
+            }
+            60% {
+                opacity: 1;
+                transform: translateY(-2px) scale(1.05);
+                text-shadow: 0 0 12px rgba(45, 165, 138, 0.6);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+                text-shadow: 0 0 8px rgba(45, 165, 138, 0.3);
+            }
+        }
+        
+        /* QA Interface Mockup */
+        .qa-interface-mockup {
+            width: 100%;
+            max-width: 420px;
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 
+                0 4px 12px rgba(0, 0, 0, 0.06),
+                0 1px 3px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .qa-interface-mockup::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(rgba(0, 0, 0, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 0, 0, 0.02) 1px, transparent 1px);
+            background-size: 8px 8px;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        
+        .ai-thinking-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+            opacity: 0;
+        }
+        
+        .thinking-pulse {
+            width: 8px;
+            height: 8px;
+            background: #2DA58A;
+            border-radius: 50%;
+            opacity: 0.6;
+        }
+        
+        .thinking-text {
+            font-size: 0.75rem;
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .chat-container {
+            position: relative;
+            height: 180px;
+            overflow: hidden;
+        }
+        
+        .chat-messages {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            height: 100%;
+        }
+        
+        .message-bubble {
+            max-width: 90%;
+            padding: 8px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            line-height: 1.3;
+            opacity: 0;
+            transform: translateY(10px);
+            margin-bottom: 6px;
+        }
+        
+        .message-bubble.user {
+            background: rgba(0, 0, 0, 0.04);
+            color: #333;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+        }
+        
+        .message-bubble.ai {
+            background: linear-gradient(135deg, rgba(45, 165, 138, 0.08), rgba(83, 221, 180, 0.08));
+            color: #2DA58A;
+            border: 1px solid rgba(45, 165, 138, 0.15);
+            backdrop-filter: blur(4px);
+        }
+        
+        .message-bubble.ai.typing {
+            filter: blur(0.5px);
+        }
+        
+        .message-bubble.animate {
+            opacity: 1;
+            transform: translateY(0);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 12px;
+            background: rgba(45, 165, 138, 0.05);
+            border-radius: 12px;
+            opacity: 0;
+            width: fit-content;
+        }
+        
+        .typing-dot {
+            width: 4px;
+            height: 4px;
+            background: #2DA58A;
+            border-radius: 50%;
+            opacity: 0.4;
+        }
+        
+        .time-saved-badge {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            background: rgba(45, 165, 138, 0.05);
+            border-radius: 8px;
+            font-size: 0.7rem;
+            color: #666;
+            opacity: 0;
+            transform: translateY(5px);
+        }
+        
+        .time-saved-icon {
+            width: 12px;
+            height: 12px;
+            color: #2DA58A;
+        }
+        
+        .ai-avatar-glow {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 12px;
+            height: 12px;
+            background: #2DA58A;
+            border-radius: 50%;
+            opacity: 0;
+            box-shadow: 0 0 0 0 rgba(45, 165, 138, 0.4);
+        }
+        
+        /* Step 3 Animations */
+        .qa-interface-mockup.looping .ai-thinking-indicator {
+            animation: thinkingPulse 1s ease-out 0s both;
+        }
+        
+        .qa-interface-mockup.looping .thinking-pulse {
+            animation: pulseGlow 1s ease-in-out 0s infinite;
+        }
+        
+        .qa-interface-mockup.looping .ai-avatar-glow {
+            animation: avatarGlow 4s ease-in-out 1s both;
+        }
+        
+        .qa-interface-mockup.looping .time-saved-badge {
+            animation: badgeFadeIn 0.6s ease-out 5.5s both;
+        }
+        
+        @keyframes thinkingPulse {
+            0% {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes pulseGlow {
+            0%, 100% {
+                opacity: 0.6;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.2);
+            }
+        }
+        
+        @keyframes avatarGlow {
+            0%, 100% {
+                opacity: 0;
+                box-shadow: 0 0 0 0 rgba(45, 165, 138, 0.4);
+            }
+            50% {
+                opacity: 0.8;
+                box-shadow: 0 0 0 8px rgba(45, 165, 138, 0.1);
+            }
+        }
+        
+        @keyframes typingDots {
+            0%, 20% {
+                opacity: 0.4;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.2);
+            }
+            80%, 100% {
+                opacity: 0.4;
+                transform: scale(1);
+            }
+        }
+        
+        @keyframes badgeFadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Final Synthesis Dashboard */
+        .synthesis-dashboard {
+            width: 100%;
+            max-width: 1000px;
+            margin: 6rem auto;
+            background: linear-gradient(135deg, 
+                rgba(0, 0, 0, 0.02), 
+                rgba(45, 165, 138, 0.03));
+            border-radius: 24px;
+            padding: 3rem;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.12),
+                0 8px 32px rgba(0, 0, 0, 0.08),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .synthesis-dashboard::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(45, 165, 138, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(83, 221, 180, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+        }
+        
+        .synthesis-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .synthesis-subtitle {
+            font-size: 0.9rem;
+            color: #666;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            font-style: italic;
+        }
+        
+        .synthesis-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0;
+            background: linear-gradient(135deg, #0A0A0A 0%, #2DA58A 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .synthesis-content {
+            display: flex;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* System Intelligence Dashboard */
+        .system-intelligence-mockup {
+            width: 100%;
+            max-width: 720px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 32px;
+            box-shadow: 
+                0 12px 40px rgba(0, 0, 0, 0.15),
+                0 4px 16px rgba(0, 0, 0, 0.08),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(12px);
+        }
+        
+        .system-intelligence-mockup::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(rgba(45, 165, 138, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(45, 165, 138, 0.03) 1px, transparent 1px);
+            background-size: 16px 16px;
+            opacity: 0;
+            transition: opacity 0.6s ease;
+        }
+        
+        .system-intelligence-mockup::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 10% 10%, rgba(45, 165, 138, 0.02) 0%, transparent 40%),
+                radial-gradient(circle at 90% 90%, rgba(83, 221, 180, 0.02) 0%, transparent 40%);
+            pointer-events: none;
+        }
+        
+        .dashboard-content {
+            display: flex;
+            gap: 32px;
+            margin-top: 24px;
+            align-items: flex-start;
+        }
+        
+        .summary-panel {
+            flex: 0 0 65%;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+            opacity: 1;
+            transform: translateY(0);
+            min-height: 32px;
+        }
+        
+        .summary-label {
+            font-size: 0.85rem;
+            color: #666;
+            font-weight: 500;
+            white-space: nowrap;
+            margin-right: 16px;
+        }
+        
+        .summary-value {
+            font-size: 0.85rem;
+            color: #333;
+            font-weight: 600;
+            text-align: right;
+        }
+        
+        .tolerance-heatmap {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .tolerance-bar {
+            height: 12px;
+            border-radius: 6px;
+            position: relative;
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .tolerance-bar.high {
+            width: 60px; /* 19 parts - largest */
+            background: linear-gradient(90deg, #ef4444, #f87171);
+        }
+        
+        .tolerance-bar.medium {
+            width: 35px; /* 11 parts - medium */
+            background: linear-gradient(90deg, #f59e0b, #fbbf24);
+        }
+        
+        .tolerance-bar.low {
+            width: 20px; /* 4 parts - smallest */
+            background: linear-gradient(90deg, #10b981, #34d399);
+        }
+        
+        .tolerance-bar.animate {
+            transform: scaleX(1);
+        }
+        
+        .summary-section {
+            margin-top: 16px;
+            opacity: 1;
+            transform: translateY(0);
+            padding-top: 16px;
+            border-top: 1px solid rgba(0, 0, 0, 0.04);
+        }
+        
+        .section-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+        }
+        
+        .risk-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .risk-list li {
+            font-size: 0.8rem;
+            color: #666;
+            padding: 6px 0;
+            padding-left: 20px;
+            position: relative;
+            opacity: 1;
+            transform: translateX(0);
+            line-height: 1.4;
+        }
+        
+        .risk-list li::before {
+            content: '⚠';
+            position: absolute;
+            left: 0;
+            color: #f59e0b;
+            font-size: 0.75rem;
+        }
+        
+        .confidence-panel {
+            flex: 0 0 35%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            padding: 16px;
+        }
+        
+        .confidence-gauge {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .gauge-circle {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: conic-gradient(#2DA58A 0deg, #2DA58A 306deg, rgba(0, 0, 0, 0.1) 306deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            opacity: 1;
+            transform: scale(1);
+            transition: all 0.6s ease;
+        }
+        
+        .gauge-circle::before {
+            content: '';
+            position: absolute;
+            inset: 8px;
+            background: white;
+            border-radius: 50%;
+        }
+        
+        .gauge-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2DA58A;
+            z-index: 1;
+        }
+        
+        .gauge-label {
+            font-size: 0.8rem;
+            color: #666;
+            text-align: center;
+            font-weight: 500;
+        }
+        
+        .status-tag {
+            padding: 6px 12px;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(52, 211, 153, 0.1));
+            color: #10b981;
+            border-radius: 16px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .ai-avatar {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, rgba(45, 165, 138, 0.1), rgba(83, 221, 180, 0.1));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(45, 165, 138, 0.2);
+            opacity: 1;
+            transform: scale(1);
+        }
+        
+        .ai-icon {
+            position: relative;
+            width: 16px;
+            height: 12px;
+        }
+        
+        .ai-eye {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #2DA58A;
+            border-radius: 50%;
+            top: 4px;
+            box-shadow: 0 0 6px rgba(45, 165, 138, 0.6);
+        }
+        
+        .ai-eye.left {
+            left: 2px;
+        }
+        
+        .ai-eye.right {
+            right: 2px;
+        }
+        
+        .llm-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            opacity: 1;
+            transform: translateY(0);
+            text-align: center;
+        }
+        
+        .meta-item {
+            font-size: 0.75rem;
+            color: #666;
+            text-align: center;
+            font-style: italic;
+            line-height: 1.3;
+        }
+        
+        /* Dashboard Animations */
+        .system-intelligence-mockup.booting::before {
+            animation: gridFadeIn 0.6s ease-out 0.2s both;
+        }
+        
+        .system-intelligence-mockup.booting .summary-item:nth-child(1) {
+            animation: itemFadeIn 0.6s ease-out 0.8s both;
+        }
+        
+        .system-intelligence-mockup.booting .summary-item:nth-child(2) {
+            animation: itemFadeIn 0.6s ease-out 1.0s both;
+        }
+        
+        .system-intelligence-mockup.booting .summary-item:nth-child(3) {
+            animation: itemFadeIn 0.6s ease-out 1.2s both;
+        }
+        
+        .system-intelligence-mockup.booting .summary-item:nth-child(4) {
+            animation: itemFadeIn 0.6s ease-out 1.4s both;
+        }
+        
+        .system-intelligence-mockup.booting .summary-item:nth-child(5) {
+            animation: itemFadeIn 0.6s ease-out 1.6s both;
+        }
+        
+        .system-intelligence-mockup.booting .summary-section {
+            animation: itemFadeIn 0.6s ease-out 1.8s both;
+        }
+        
+        .system-intelligence-mockup.booting .gauge-circle {
+            animation: gaugeScale 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 4.0s both;
+        }
+        
+        .system-intelligence-mockup.booting .status-tag {
+            animation: statusBounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 4.0s both;
+        }
+        
+        .system-intelligence-mockup.booting .ai-avatar {
+            animation: aiGlow 0.8s ease-out 3.0s both;
+        }
+        
+        @keyframes itemFadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(15px);
+                filter: blur(2px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+                filter: blur(0);
+            }
+        }
+        
+        @keyframes gaugeScale {
+            0% {
+                opacity: 0;
+                transform: scale(0.6);
+            }
+            60% {
+                opacity: 1;
+                transform: scale(1.1);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        @keyframes statusBounce {
+            0% {
+                opacity: 0;
+                transform: translateY(20px) scale(0.8);
+            }
+            60% {
+                opacity: 1;
+                transform: translateY(-2px) scale(1.05);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        @keyframes aiGlow {
+            0% {
+                opacity: 0;
+                transform: scale(0.6);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        .system-intelligence-mockup.booting .llm-meta {
+            animation: itemFadeIn 0.6s ease-out 3.0s both;
+        }
+        
+        .system-intelligence-mockup.booting .risk-list li:nth-child(1) {
+            animation: riskTypeIn 0.8s ease-out 1.6s both;
+        }
+        
+        .system-intelligence-mockup.booting .risk-list li:nth-child(2) {
+            animation: riskTypeIn 0.8s ease-out 2.0s both;
+        }
+        
+        .system-intelligence-mockup.booting .risk-list li:nth-child(3) {
+            animation: riskTypeIn 0.8s ease-out 2.4s both;
+        }
+        
+        @keyframes riskTypeIn {
+            0% {
+                opacity: 0;
+                transform: translateX(-15px);
+                filter: blur(1px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+                filter: blur(0);
+            }
+        }
+        
+        /* Responsive Design for Synthesis Dashboard */
+        @media (max-width: 1024px) {
+            .synthesis-dashboard {
+                margin: 4rem auto;
+                padding: 2rem;
+            }
+            
+            .synthesis-title {
+                font-size: 1.8rem;
+            }
+            
+            .system-intelligence-mockup {
+                max-width: 600px;
+                padding: 24px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .synthesis-dashboard {
+                margin: 3rem 1rem;
+                padding: 1.5rem;
+            }
+            
+            .synthesis-title {
+                font-size: 1.5rem;
+            }
+            
+            .synthesis-subtitle {
+                font-size: 0.8rem;
+            }
+            
+            .system-intelligence-mockup {
+                padding: 20px;
+            }
+            
+            .dashboard-content {
+                flex-direction: column;
+                gap: 16px;
+            }
+            
+            .summary-panel {
+                flex: 1;
+            }
+            
+            .confidence-panel {
+                flex: 1;
+            }
+        }
+        
+        .central-node {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 80px;
+            height: 36px;
+            margin-left: -40px;
+            margin-top: -18px;
+            transform: scale(0);
+            transform-origin: center center;
+            background: linear-gradient(135deg, #2DA58A, #53DDB4);
+            color: white;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+            opacity: 0;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 
+                0 4px 16px rgba(45, 165, 138, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+        
+        .sub-node {
+            position: absolute;
+            width: 60px;
+            height: 28px;
+            background: linear-gradient(135deg, rgba(45, 165, 138, 0.08), rgba(83, 221, 180, 0.12));
+            color: #2DA58A;
+            border: 1px solid rgba(45, 165, 138, 0.2);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 500;
+            opacity: 0;
+            transform: scale(0);
+            backdrop-filter: blur(8px);
+            box-shadow: 
+                0 2px 8px rgba(45, 165, 138, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+        
+        .node-a1 {
+            top: 20px;
+            left: 20px;
+        }
+        
+        .node-a2 {
+            top: 20px;
+            right: 20px;
+        }
+        
+        .node-a3 {
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) scale(0);
+        }
+        
+        .connections {
+            position: absolute;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+        }
+        
+        .connection-line {
+            stroke: #2DA58A;
+            stroke-width: 2;
+            stroke-dasharray: 0;
+            opacity: 0;
+            filter: drop-shadow(0 0 2px rgba(45, 165, 138, 0.4));
+            stroke-linecap: round;
+        }
+        
+        .details-panel {
+            width: 160px;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.02), rgba(0, 0, 0, 0.04));
+            border-radius: 12px;
+            padding: 16px;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            opacity: 0;
+            transform: translateX(40px) scale(0.9);
+            backdrop-filter: blur(8px);
+            box-shadow: 
+                0 4px 16px rgba(0, 0, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+        
+        .detail-item {
+            font-size: 0.75rem;
+            color: #333;
+            margin-bottom: 8px;
+            font-weight: 500;
+            opacity: 0;
+            transform: translateX(10px);
+            font-family: 'Inter', monospace;
+        }
+        
+        .detail-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .status-line {
+            font-size: 0.85rem;
+            color: #2DA58A;
+            font-weight: 600;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(15px);
+            text-shadow: 0 0 8px rgba(45, 165, 138, 0.3);
+        }
+        
+        .step-visual:hover {
+            transform: scale(1.02);
+            box-shadow: 0 20px 40px rgba(45, 165, 138, 0.1);
+        }
+        
+        .step-number {
+            font-size: 3rem;
+            font-weight: 800;
+            color: rgba(45, 165, 138, 0.15);
+            line-height: 1;
+            margin: 0 0 0.5rem 0;
+        }
+        
+        .step-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--accent);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            box-shadow: 0 4px 12px rgba(45, 165, 138, 0.2);
+            transition: all 0.3s var(--transition);
+        }
+        
+        .step-icon svg {
+            width: 32px;
+            height: 32px;
+        }
+        
+        .step-content {
+            display: flex;
+            align-items: center;
+            gap: 4rem;
+            width: 100%;
+            min-height: 400px;
+        }
+        
+        .process-step.right .step-content {
+            flex-direction: row-reverse;
+        }
+        
+        .step-text {
+            flex: 1;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .process-step.right .step-text {
+            text-align: right;
+        }
+        
+        .step-label {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 1rem;
+        }
+        
+        .step-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            line-height: 1.2;
+            margin-bottom: 0.75rem;
+        }
+        
+        .step-description {
+            font-size: 1.1rem;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+        
+        .step-description code {
+            font-family: 'Courier New', monospace;
+            background: rgba(0, 0, 0, 0.05);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.95rem;
+        }
+        
+        .step-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .feature-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        
+        .process-step.right .feature-tags {
+            justify-content: flex-end;
+        }
+        
+        .tag {
+            background: rgba(45, 165, 138, 0.08);
+            color: var(--accent);
+            padding: 0.3rem 0.7rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            border: 1px solid rgba(45, 165, 138, 0.15);
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .formats-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #999;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 400;
+            transition: all 0.25s var(--transition);
+            position: relative;
+            margin-top: 3rem;
+            text-align: center;
+        }
+        
+        .formats-link::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: var(--accent);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.25s var(--transition);
+        }
+        
+        .formats-link:hover {
+            color: var(--accent);
+            transform: translateX(3px);
+        }
+        
+        .formats-link:hover::after {
+            transform: scaleX(1);
+        }
+        
+        .formats-link::before {
+            content: '→';
+            transition: transform 0.25s var(--transition);
+        }
+        
+        .formats-link:hover::before {
+            transform: translateX(3px);
+        }
+        
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .hero-container {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            
+            .hero-visual {
+                max-width: 500px;
+                margin: 0 auto;
+            }
+            
+            .floating-badges {
+                display: none;
+            }
+            
+            .hero-buttons {
+                justify-content: center;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            #how-it-works {
+                padding: 4rem 1.5rem;
+            }
+            
+            .section-title {
+                font-size: 1.8rem;
+                margin-bottom: 2.5rem;
+            }
+            
+            .process-steps {
+                gap: 3rem;
+            }
+            
+            .step-content {
+                flex-direction: column;
+                gap: 2rem;
+                text-align: center;
+            }
+            
+            .process-step.right .step-content {
+                flex-direction: column;
+            }
+            
+            .process-step.right .step-text {
+                text-align: center;
+            }
+            
+            .step-visual {
+                height: 250px;
+            }
+            
+            .step-icon {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .step-icon svg {
+                width: 24px;
+                height: 24px;
+            }
+            
+            .step-title {
+                font-size: 1.5rem;
+            }
+            
+            .step-description {
+                font-size: 1rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .section-title {
+                font-size: 1.5rem;
+                line-height: 1.3;
+            }
+            
+            .process-steps {
+                gap: 2rem;
+            }
+            
+            .step-content {
+                gap: 1.5rem;
+            }
+            
+            .step-visual {
+                height: 200px;
+            }
+            
+            .step-icon {
+                width: 50px;
+                height: 50px;
+            }
+            
+            .step-icon svg {
+                width: 20px;
+                height: 20px;
+            }
+            
+            .step-title {
+                font-size: 1.25rem;
+            }
+            
+            .step-description {
+                font-size: 0.9rem;
+            }
+            
+            .step-number {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-container">
+            <div class="logo">
+                <div class="logo-mark">C</div>
+                <span>Cadence</span>
+            </div>
+            <a href="#" class="nav-cta">Get Started</a>
+        </div>
+    </nav>
+    
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-container">
+            <!-- Content -->
+            <div class="hero-content">
+                <h1 class="hero-headline">
+                    Make your <span class="gradient-text" data-text="CAD files talk">CAD files talk</span>.
+                </h1>
+                <p class="hero-subheading">
+                    Cadence helps manufacturing teams train new engineers 10x faster by turning your company's complex CAD files into interactive, searchable answers. Just ask.
+                </p>
+                <div class="hero-buttons">
+                    <a href="#" class="btn-primary">Try live demo</a>
+                    <a href="#" class="btn-secondary">See how it works</a>
+                </div>
+            </div>
+            
+            <!-- Visual -->
+            <div class="hero-visual">
+                <div class="device-mockup">
+                    <div class="device-frame">
+                        <div class="device-screen">
+                            <div class="chat-interface">
+                                <div class="chat-messages">
+                                    <!-- Automated chat messages will be added here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Floating Orb -->
+        <div class="floating-orb">
+            <div class="orb"></div>
+            <div class="orb-inner"></div>
+        </div>
+    </section>
+    
+    <!-- How it Works Section -->
+    <section id="how-it-works">
+        <div class="how-it-works-container">
+            <h2 class="section-title">
+                How Cadence turns your CAD chaos into clear answers
+            </h2>
+            
+            <div class="process-steps">
+                <!-- Step 1 -->
+                <div class="process-step left" data-step="1">
+                    <div class="step-content">
+                        <div class="step-visual">
+                            <div class="cad-parser-mockup">
+                                <div class="mockup-header">
+                                    <div class="file-title">axle-bracket-v4.step</div>
+                                    <div class="file-badge">Native CAD .step</div>
+                                </div>
+                                <div class="parsing-log">
+                                    <div class="log-line" data-delay="0">File received</div>
+                                    <div class="log-line" data-delay="300">Extracting metadata...</div>
+                                    <div class="log-line" data-delay="600">Found 28 parts</div>
+                                    <div class="log-line" data-delay="900">Detected 4 assemblies</div>
+                                    <div class="log-line" data-delay="1200">Tolerances: 14mm ±0.3</div>
+                                    <div class="log-line" data-delay="1500">Constraint: Planar</div>
+                                    <div class="log-line" data-delay="1800">Last modified: 2 days ago</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="step-text">
+                            <div class="step-number">01</div>
+                            <h3 class="step-title">Understands your files</h3>
+                            <p class="step-description">
+                                Cadence syncs with native CAD files like <code>.step</code>, <code>.dwg</code>, and <code>.sldprt</code>, extracting technical metadata, topology, and annotations in real time.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Step 2 -->
+                <div class="process-step right" data-step="2">
+                    <div class="step-content">
+                        <div class="step-visual">
+                            <div class="contextual-memory-mockup">
+                                <div class="mockup-header">
+                                    <div class="file-title">left-shaft-assembly-v2.step</div>
+                                    <div class="file-badge">Contextual Map</div>
+                                </div>
+                                <div class="relationship-graph">
+                                    <div class="graph-container">
+                                        <div class="central-node" data-delay="0">Assembly A</div>
+                                        <div class="sub-node node-a1" data-delay="200">Part A1</div>
+                                        <div class="sub-node node-a2" data-delay="400">Part A2</div>
+                                        <div class="sub-node node-a3" data-delay="600">Part A3</div>
+                                        <svg class="connections" width="100%" height="100%">
+                                            <line class="connection-line line-1" x1="50%" y1="50%" x2="25%" y2="25%" data-delay="800"></line>
+                                            <line class="connection-line line-2" x1="50%" y1="50%" x2="75%" y2="25%" data-delay="900"></line>
+                                            <line class="connection-line line-3" x1="50%" y1="50%" x2="50%" y2="75%" data-delay="1000"></line>
+                                        </svg>
+                                    </div>
+                                    <div class="details-panel" data-delay="1200">
+                                        <div class="detail-item">Part: A2</div>
+                                        <div class="detail-item">Constraint: Rotational</div>
+                                        <div class="detail-item">Tolerance: ±0.3mm</div>
+                                        <div class="detail-item">Interference Risk: Low</div>
+                                    </div>
+                                </div>
+                                <div class="status-line" data-delay="1600">Situational model complete ✅</div>
+                            </div>
+                        </div>
+                        <div class="step-text">
+                            <div class="step-number">02</div>
+                            <h3 class="step-title">Builds contextual memory</h3>
+                            <p class="step-description">
+                                It maps relationships between parts, assemblies, tolerances, and specs to form a "situational model" of your designs.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Step 3 -->
+                <div class="process-step left" data-step="3">
+                    <div class="step-content">
+                        <div class="step-visual">
+                            <div class="qa-interface-mockup">
+                                <div class="mockup-header">
+                                    <div class="file-title">cadence-qa-v1.step</div>
+                                    <div class="file-badge">AI Assistant</div>
+                                </div>
+                                <div class="ai-thinking-indicator">
+                                    <div class="thinking-pulse"></div>
+                                    <span class="thinking-text">AI processing...</span>
+                                </div>
+                                <div class="chat-container">
+                                    <div class="ai-avatar-glow"></div>
+                                    <div class="chat-messages">
+                                        <div class="message-bubble user">Can this shaft handle 120Nm torque?</div>
+                                        <div class="message-bubble ai" data-text="Yes — FEA analysis from v2 shows a max stress of 97MPa at this torque. Factor of safety: 1.8.">Yes — FEA analysis from v2 shows a max stress of 97MPa at this torque. Factor of safety: 1.8.</div>
+                                        <div class="message-bubble user">What changed between v1 and v2?</div>
+                                        <div class="typing-indicator">
+                                            <div class="typing-dot"></div>
+                                            <div class="typing-dot"></div>
+                                            <div class="typing-dot"></div>
+                                        </div>
+                                        <div class="message-bubble ai" data-text="Geometry of Part A2 was modified — fillet radius increased from 1.2mm to 2.5mm, reducing stress concentration.">Geometry of Part A2 was modified — fillet radius increased from 1.2mm to 2.5mm, reducing stress concentration.</div>
+                                        <div class="message-bubble ai">Impact: Reduced risk of fatigue failure by ~23%.</div>
+                                    </div>
+                                    <div class="time-saved-badge">
+                                        <svg class="time-saved-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <circle cx="12" cy="12" r="10"></circle>
+                                            <polyline points="12,6 12,12 16,14"></polyline>
+                                        </svg>
+                                        Time saved: 4.2hrs
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="step-text">
+                            <div class="step-number">03</div>
+                            <h3 class="step-title">Answers questions like a senior engineer</h3>
+                            <p class="step-description">
+                                Just ask. Cadence understands structural intent, past changes, and part interactions to answer with confidence.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Final Synthesis Dashboard -->
+                <div class="synthesis-dashboard" data-step="4">
+                    <div class="synthesis-header">
+                        <div class="synthesis-subtitle">Here's what Cadence sees after parsing and mapping your CAD files</div>
+                        <h2 class="synthesis-title">Cadence Project Intelligence Summary</h2>
+                    </div>
+                    <div class="synthesis-content">
+                        <div class="system-intelligence-mockup">
+                            <div class="mockup-header">
+                                <div class="file-title">cadence-summary-v4.report</div>
+                                <div class="file-badge">Final Report</div>
+                            </div>
+                                <div class="dashboard-content">
+                                    <div class="summary-panel">
+                                        <div class="summary-item">
+                                            <span class="summary-label">Project:</span>
+                                            <span class="summary-value">motor-mount-v4</span>
+                                        </div>
+                                        <div class="summary-item">
+                                            <span class="summary-label">Part Count:</span>
+                                            <span class="summary-value">34 components</span>
+                                        </div>
+                                        <div class="summary-item">
+                                            <span class="summary-label">Assembly Count:</span>
+                                            <span class="summary-value">6 assemblies</span>
+                                        </div>
+                                        <div class="summary-item">
+                                            <span class="summary-label">Tolerance Distribution:</span>
+                                            <div class="tolerance-heatmap">
+                                                <div class="tolerance-bar high" title="±0.2mm: 19 parts" data-count="19"></div>
+                                                <div class="tolerance-bar medium" title="±0.5mm: 11 parts" data-count="11"></div>
+                                                <div class="tolerance-bar low" title="±1.0mm: 4 parts" data-count="4"></div>
+                                            </div>
+                                        </div>
+                                        <div class="summary-item">
+                                            <span class="summary-label">Last Modified:</span>
+                                            <span class="summary-value">3 days ago</span>
+                                        </div>
+                                        <div class="summary-section">
+                                            <div class="section-title">Key Risks Flagged:</div>
+                                            <ul class="risk-list">
+                                                <li>Part B2: Thin wall &lt;1.5mm</li>
+                                                <li>Assembly C1: Unsupported cantilever span</li>
+                                                <li>Tolerance stack &gt;0.8mm on shaft loop</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="confidence-panel">
+                                        <div class="confidence-gauge">
+                                            <div class="gauge-circle">
+                                                <div class="gauge-value">85%</div>
+                                            </div>
+                                            <div class="gauge-label">Reasoning Confidence</div>
+                                        </div>
+                                        <div class="llm-meta">
+                                            <div class="meta-item">Reasoned from v1 → v4 changes</div>
+                                            <div class="meta-item">14 factors analyzed</div>
+                                            <div class="meta-item">Cross-referenced FEA data</div>
+                                        </div>
+                                        <div class="status-tag">Ready to Review</div>
+                                        <div class="ai-avatar">
+                                            <div class="ai-icon">
+                                                <div class="ai-eye left"></div>
+                                                <div class="ai-eye right"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="text-align: center;">
+                <a href="#" class="formats-link">
+                    See supported formats
+                </a>
+            </div>
+        </div>
+    </section>
+    
+    <script>
+        // Bulletproof typewriter with comprehensive error handling
+        function typeWriter(element, htmlText, speed = 16, startDelay = 0) {
+            // Validation checks
+            if (!element) {
+                console.error('TypeWriter: element is null or undefined');
+                return;
+            }
+            if (!htmlText) {
+                console.error('TypeWriter: htmlText is empty or undefined');
+                return;
+            }
+            if (typeof speed !== 'number' || speed < 1) {
+                console.warn('TypeWriter: invalid speed, using default');
+                speed = 16;
+            }
+            
+            setTimeout(() => {
+                try {
+                    // Safety check for element still existing in DOM
+                    if (!document.contains(element)) {
+                        console.error('TypeWriter: element no longer in DOM');
+                        return;
+                    }
+                    
+                    // Replace <br> with newlines for text extraction
+                    const textForParsing = htmlText.replace(/<br>/g, '\n');
+                    
+                    // Create a temporary element to parse HTML
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = textForParsing;
+                    
+                    // Extract plain text for typing
+                    const plainText = tempDiv.textContent || tempDiv.innerText || '';
+                    
+                    if (!plainText) {
+                        console.error('TypeWriter: no text content to type');
+                        return;
+                    }
+                    
+                    let i = 0;
+                    element.innerHTML = '';
+                    
+                    function type() {
+                        // Safety checks
+                        if (!document.contains(element)) {
+                            console.log('TypeWriter: stopping - element removed from DOM');
+                            return;
+                        }
+                        if (!isTabActive) {
+                            console.log('TypeWriter: stopping - tab inactive');
+                            return;
+                        }
+                        
+                        if (i < plainText.length) {
+                            try {
+                                const char = plainText.charAt(i);
+                                
+                                // Get the current portion of plain text
+                                const currentText = plainText.substring(0, i + 1);
+                                
+                                // Create HTML version by replacing technical terms and newlines
+                                let htmlVersion = currentText
+                                    .replace(/M47 subframe/g, '<span class="technical-term">M47 subframe</span>')
+                                    .replace(/47Nm/g, '<span class="technical-term">47Nm</span>')
+                                    .replace(/14mm variance/g, '<span class="technical-term">14mm variance</span>')
+                                    .replace(/32Nm ± 2Nm/g, '<span class="technical-term">32Nm ± 2Nm</span>')
+                                    .replace(/Steel Grade A36/g, '<span class="technical-term">Steel Grade A36</span>')
+                                    .replace(/M12x1\.75/g, '<span class="technical-term">M12x1.75</span>')
+                                    .replace(/0\.25mm/g, '<span class="technical-term">0.25mm</span>')
+                                    .replace(/upper flange interface/g, '<span class="technical-term">upper flange interface</span>')
+                                    .replace(/2\.4 MPa/g, '<span class="technical-term">2.4 MPa</span>')
+                                    .replace(/Ra 1\.6μm/g, '<span class="technical-term">Ra 1.6μm</span>')
+                                    .replace(/H7\/g6/g, '<span class="technical-term">H7/g6</span>')
+                                    .replace(/25\.0 \+0\.021\/\+0\.000 mm/g, '<span class="technical-term">25.0 +0.021/+0.000 mm</span>')
+                                    .replace(/25\.0 \+0\.000\/\-0\.013 mm/g, '<span class="technical-term">25.0 +0.000/-0.013 mm</span>')
+                                    .replace(/\n/g, '<br>');
+                                
+                                element.innerHTML = htmlVersion;
+                                
+                                let delay = Math.max(speed, 1); // Ensure positive delay
+                                i++;
+                                setTimeout(type, delay);
+                            } catch (error) {
+                                console.error('TypeWriter: error during typing:', error);
+                                return;
+                            }
+                        }
+                    }
+                    
+                    type();
+                } catch (error) {
+                    console.error('TypeWriter: initialization error:', error);
+                }
+            }, Math.max(startDelay, 0));
+        }
+        
+        // Automated chat recording system
+        let currentQuestionIndex = 0;
+        let chatCycleCount = 0;
+        let messageCounter = 0;
+        let isTabActive = true; // Start as active to allow initial load (Arc browser fix)
+        let animationQueue = [];
+        let hasStarted = false;
+        
+        const questions = [
+            {
+                text: "What does this bracket connect to?",
+                file: "axle-bracket-v4.step",
+                response: "This connects to the M47 subframe — torque spec: 47Nm.<br>CAD file: 14mm variance detected.<br>Last updated 2 days ago.",
+                timeSaved: "38 min"
+            },
+            {
+                text: "What's the torque spec for the left shaft?",
+                file: "left-shaft-assembly-v2.step",
+                response: "Left shaft torque specification is 32Nm ± 2Nm.<br>Material: Steel Grade A36 with thread pitch M12x1.75.<br>Critical clearance: 0.25mm from housing edge.",
+                timeSaved: "42 min"
+            },
+            {
+                text: "Which part connects to the load bearing?",
+                file: "load-bearing-mount-v3.step",
+                response: "Load bearing contact occurs at the upper flange interface.<br>Contact pressure: 2.4 MPa under normal operating conditions.<br>Surface finish requirement: Ra 1.6μm or better.",
+                timeSaved: "35 min"
+            },
+            {
+                text: "What tolerance is needed for the fit?",
+                file: "precision-fit-coupling-v1.step",
+                response: "Recommended tolerance: H7/g6 clearance fit.<br>Shaft diameter: 25.0 +0.021/+0.000 mm.<br>Bore diameter: 25.0 +0.000/-0.013 mm.",
+                timeSaved: "51 min"
+            }
+        ];
+        
+        // Bulletproof smooth scrolling with error handling
+        function smoothScrollToBottom(element) {
+            if (!element) {
+                console.error('SmoothScroll: element is null');
+                return;
+            }
+            
+            try {
+                const targetScroll = element.scrollHeight - element.clientHeight;
+                const startScroll = element.scrollTop;
+                const distance = targetScroll - startScroll;
+                const duration = 600;
+                
+                // No need to scroll if already at bottom or no scrollable content
+                if (distance <= 0) return;
+                
+                let startTime = null;
+                let animationId = null;
+                
+                function animateScroll(currentTime) {
+                    // Safety check - element still exists
+                    if (!document.contains(element)) {
+                        if (animationId) cancelAnimationFrame(animationId);
+                        return;
+                    }
+                    
+                    if (startTime === null) startTime = currentTime;
+                    const timeElapsed = currentTime - startTime;
+                    const progress = Math.min(timeElapsed / duration, 1);
+                    
+                    // Smooth easing function (ease-out-quart)
+                    const easeProgress = 1 - Math.pow(1 - progress, 4);
+                    
+                    try {
+                        element.scrollTop = startScroll + (distance * easeProgress);
+                    } catch (error) {
+                        console.error('SmoothScroll: error setting scrollTop:', error);
+                        return;
+                    }
+                    
+                    if (progress < 1) {
+                        animationId = requestAnimationFrame(animateScroll);
+                    }
+                }
+                
+                animationId = requestAnimationFrame(animateScroll);
+            } catch (error) {
+                console.error('SmoothScroll: initialization error:', error);
+                // Fallback to instant scroll
+                try {
+                    element.scrollTop = element.scrollHeight;
+                } catch (fallbackError) {
+                    console.error('SmoothScroll: fallback scroll failed:', fallbackError);
+                }
+            }
+        }
+        
+        // Bulletproof question addition with comprehensive validation
+        function addNextQuestion() {
+            try {
+                console.log('addNextQuestion called, index:', currentQuestionIndex);
+                
+                // Validate DOM elements
+                const chatMessages = document.querySelector('.chat-messages');
+                const chatInterface = document.querySelector('.chat-interface');
+                
+                if (!chatMessages || !chatInterface) {
+                    console.error('Chat elements not found in addNextQuestion');
+                    // Attempt recovery
+                    setTimeout(() => {
+                        console.log('Retrying addNextQuestion after 1s...');
+                        addNextQuestion();
+                    }, 1000);
+                    return;
+                }
+                
+                // Validate question index and data
+                if (currentQuestionIndex < 0 || currentQuestionIndex >= questions.length) {
+                    console.error('Invalid question index:', currentQuestionIndex);
+                    currentQuestionIndex = 0; // Reset to safe value
+                }
+                
+                const currentQuestion = questions[currentQuestionIndex];
+                if (!currentQuestion || !currentQuestion.text || !currentQuestion.response) {
+                    console.error('Invalid question data:', currentQuestion);
+                    return;
+                }
+                
+                messageCounter++;
+                console.log('Processing question:', currentQuestion.text);
+            
+            // Create new user message
+            const userMessage = document.createElement('div');
+            userMessage.className = 'message message-user';
+            userMessage.style.opacity = '0';
+            userMessage.innerHTML = `
+                <div class="user-bubble">
+                    <div class="typing-text">${currentQuestion.text}</div>
+                </div>
+                <div class="context-indicator" style="opacity: 0;">
+                    Context: uploaded file <span class="context-file">${currentQuestion.file}</span>
+                </div>
+            `;
+            
+            // Create AI typing indicator
+            const aiTyping = document.createElement('div');
+            aiTyping.className = 'message message-ai';
+            aiTyping.style.opacity = '0';
+            aiTyping.innerHTML = `
+                <div class="typing-indicator">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+            `;
+            
+            const aiResponse = document.createElement('div');
+            aiResponse.className = 'message message-ai message-ai-response';
+            aiResponse.style.opacity = '0';
+            aiResponse.innerHTML = `
+                <div class="ai-response">
+                    <div class="file-context">(From ${currentQuestion.file})</div>
+                    <div class="ai-response-content" id="response-content-${messageCounter}"></div>
+                </div>
+                <div class="source-reference" style="opacity: 0;">
+                    <div class="cad-icon">📐</div>
+                    <span>↳ Source: 3D Model | Updated 2 days ago</span>
+                </div>
+                <div class="chat-badge" style="opacity: 0;">
+                    Time saved: ${currentQuestion.timeSaved}
+                </div>
+            `;
+            
+            console.log('Created AI response with ID:', `response-content-${messageCounter}`);
+            
+            // Add messages to container
+            chatMessages.appendChild(userMessage);
+            chatMessages.appendChild(aiTyping);
+            chatMessages.appendChild(aiResponse);
+            
+            // Animate user message
+            safeTimeout(() => {
+                if (!isTabActive) return;
+                userMessage.style.opacity = '1';
+                userMessage.style.animation = 'messageIn 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards';
+                requestAnimationFrame(() => smoothScrollToBottom(chatInterface));
+            }, 800);
+            
+            // Show context indicator
+            safeTimeout(() => {
+                if (!isTabActive) return;
+                const contextIndicator = userMessage.querySelector('.context-indicator');
+                contextIndicator.style.opacity = '1';
+                contextIndicator.style.animation = 'fadeIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards';
+                requestAnimationFrame(() => smoothScrollToBottom(chatInterface));
+            }, 1400);
+            
+            // Show typing indicator
+            safeTimeout(() => {
+                if (!isTabActive) return;
+                aiTyping.style.opacity = '1';
+                aiTyping.style.animation = 'messageIn 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards';
+                requestAnimationFrame(() => smoothScrollToBottom(chatInterface));
+            }, 2200);
+            
+            // Hide typing indicator and show response
+            safeTimeout(() => {
+                if (!isTabActive) return;
+                aiTyping.style.opacity = '0';
+                aiTyping.style.animation = 'messageOut 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards';
+                
+                // Show AI response container and start typing simultaneously
+                safeTimeout(() => {
+                    if (!isTabActive) return;
+                    aiResponse.style.opacity = '1';
+                    aiResponse.style.animation = 'messageIn 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards';
+                    requestAnimationFrame(() => smoothScrollToBottom(chatInterface));
+                    
+                    console.log('🔍 About to start typewriter timeout...');
+                    
+                    // Bulletproof element finding with multiple fallback strategies - DIRECT timeout (no safeTimeout)
+                    setTimeout(() => {
+                        console.log('🕒 Typewriter timeout fired!');
+                        try {
+                            const currentMessageId = messageCounter;
+                            let responseContent = document.getElementById(`response-content-${currentMessageId}`);
+                            
+                            console.log('Typewriter target element:', responseContent);
+                            console.log('Response text:', currentQuestion.response);
+                            console.log('Looking for ID:', `response-content-${currentMessageId}`);
+                            
+                            // Strategy 1: Direct ID lookup
+                            if (!responseContent) {
+                                console.warn('Strategy 1 failed, trying fallback strategies...');
+                                
+                                // Strategy 2: Query within the specific response container
+                                responseContent = aiResponse.querySelector('.ai-response-content');
+                                console.log('Strategy 2 - found via container query:', responseContent);
+                            }
+                            
+                            // Strategy 3: Find the last added response element
+                            if (!responseContent) {
+                                const allResponses = document.querySelectorAll('.ai-response-content');
+                                responseContent = allResponses[allResponses.length - 1];
+                                console.log('Strategy 3 - found last response:', responseContent);
+                            }
+                            
+                            // Strategy 4: Create emergency fallback element
+                            if (!responseContent) {
+                                console.error('All strategies failed, creating emergency element');
+                                responseContent = document.createElement('div');
+                                responseContent.className = 'ai-response-content';
+                                const aiResponseContainer = aiResponse.querySelector('.ai-response');
+                                if (aiResponseContainer) {
+                                    aiResponseContainer.appendChild(responseContent);
+                                    console.log('Emergency element created and added');
+                                }
+                            }
+                            
+                            // Execute typewriter if we have a valid element
+                            if (responseContent && currentQuestion.response) {
+                                console.log('✅ TYPEWRITER STARTING with element:', responseContent);
+                                typeWriter(responseContent, currentQuestion.response, 25, 0);
+                            } else {
+                                console.error('❌ Cannot start typewriter - missing element or text');
+                                console.log('Element:', responseContent);
+                                console.log('Text:', currentQuestion.response);
+                            }
+                        } catch (error) {
+                            console.error('Error in typewriter initialization:', error);
+                        }
+                    }, 500); // Increase delay even more for bulletproof reliability
+                    
+                    // Bulletproof auto-scroll with cleanup tracking
+                    let scrollInterval = null;
+                    const startScrollInterval = () => {
+                        if (scrollInterval) clearInterval(scrollInterval);
+                        scrollInterval = setInterval(() => {
+                            try {
+                                if (!isTabActive || !document.contains(chatInterface)) {
+                                    clearInterval(scrollInterval);
+                                    scrollInterval = null;
+                                    return;
+                                }
+                                requestAnimationFrame(() => smoothScrollToBottom(chatInterface));
+                            } catch (error) {
+                                console.error('Auto-scroll error:', error);
+                                clearInterval(scrollInterval);
+                                scrollInterval = null;
+                            }
+                        }, 150);
+                    };
+                    
+                    startScrollInterval();
+                    
+                    // Show source reference
+                    safeTimeout(() => {
+                        if (!isTabActive) return;
+                        const sourceRef = aiResponse.querySelector('.source-reference');
+                        sourceRef.style.opacity = '1';
+                        sourceRef.style.animation = 'fadeIn 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards';
+                        requestAnimationFrame(() => smoothScrollToBottom(chatInterface));
+                    }, 4000);
+                    
+                    // Show time saved badge
+                    safeTimeout(() => {
+                        if (!isTabActive) return;
+                        const badge = aiResponse.querySelector('.chat-badge');
+                        badge.style.opacity = '1';
+                        badge.style.animation = 'fadeIn 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards';
+                        requestAnimationFrame(() => smoothScrollToBottom(chatInterface));
+                        if (scrollInterval) {
+                            clearInterval(scrollInterval);
+                            scrollInterval = null;
+                        }
+                    }, 4800);
+                    
+                    // Move to next question after response is complete
+                    setTimeout(() => {
+                        console.log('7-second timeout fired!');
+                        console.log('Tab active status:', isTabActive);
+                        console.log('Before increment - currentQuestionIndex:', currentQuestionIndex);
+                        
+                        // Mark as started after first message completes
+                        if (!hasStarted) {
+                            hasStarted = true;
+                            console.log('🚀 Chat startup complete - tab-aware mode enabled');
+                        }
+                        
+                        currentQuestionIndex++;
+                        if (currentQuestionIndex >= questions.length) {
+                            console.log('Reached end of questions, resetting to 0');
+                            currentQuestionIndex = 0;
+                            chatCycleCount++;
+                        }
+                        console.log('After increment - currentQuestionIndex:', currentQuestionIndex);
+                        console.log('Total questions available:', questions.length);
+                        console.log('Adding next question...');
+                        addNextQuestion();
+                    }, 7000);
+                    
+                }, 200);
+            }, 3400);
+            } catch (error) {
+                console.error('Critical error in addNextQuestion:', error);
+                // Emergency recovery - try again in 5 seconds
+                setTimeout(() => {
+                    console.log('Attempting emergency recovery...');
+                    currentQuestionIndex = 0; // Reset to safe state
+                    messageCounter = 0;
+                    addNextQuestion();
+                }, 5000);
+            }
+        }
+        
+        // Tab visibility handling (more intelligent for Arc browser)
+        document.addEventListener('visibilitychange', function() {
+            const wasActive = isTabActive;
+            isTabActive = !document.hidden;
+            
+            console.log('Tab visibility changed:', isTabActive ? 'active' : 'inactive');
+            
+            // Only clear timeouts if chat has fully started and tab becomes truly inactive
+            if (!isTabActive && hasStarted && wasActive) {
+                console.log('Clearing timeouts due to tab becoming inactive');
+                clearAllTimeouts();
+            }
+        });
+        
+        let timeoutIds = [];
+        
+        function safeTimeout(callback, delay) {
+            // Allow execution during startup phase even if tab appears inactive (Arc browser fix)
+            if (!isTabActive && hasStarted) return;
+            const timeoutId = setTimeout(callback, delay);
+            timeoutIds.push(timeoutId);
+            return timeoutId;
+        }
+        
+        function clearAllTimeouts() {
+            timeoutIds.forEach(id => clearTimeout(id));
+            timeoutIds = [];
+        }
+        
+        // Ultra-robust initialization with comprehensive safety checks
+        function initializeChat() {
+            try {
+                console.log('Initializing chat...');
+                
+                // Check for required DOM elements with retries
+                const chatInterface = document.querySelector('.chat-interface');
+                const chatMessages = document.querySelector('.chat-messages');
+                
+                if (!chatInterface || !chatMessages) {
+                    console.log('Chat elements not found, retrying...');
+                    setTimeout(initializeChat, 100);
+                    return;
+                }
+                
+                // Validate questions data
+                if (!questions || !Array.isArray(questions) || questions.length === 0) {
+                    console.error('Invalid questions data:', questions);
+                    return;
+                }
+                
+                // Reset to safe initial state
+                currentQuestionIndex = 0;
+                messageCounter = 0;
+                chatCycleCount = 0;
+                hasStarted = false; // Allow startup even if tab seems inactive
+                isTabActive = true; // Start optimistic for Arc browser
+                
+                console.log('Tab active:', isTabActive);
+                console.log('Questions available:', questions.length);
+                
+                // Clear any existing content and intervals
+                chatMessages.innerHTML = '';
+                clearAllTimeouts();
+                
+                // Ensure CSS is loaded
+                const computedStyle = window.getComputedStyle(chatInterface);
+                if (computedStyle.display === 'none') {
+                    console.warn('Chat interface is hidden, waiting...');
+                    setTimeout(initializeChat, 500);
+                    return;
+                }
+                
+                // Start first question with safety delay
+                setTimeout(() => {
+                    try {
+                        console.log('Starting first question...');
+                        addNextQuestion();
+                    } catch (error) {
+                        console.error('Error starting first question:', error);
+                        // Retry once more
+                        setTimeout(() => addNextQuestion(), 2000);
+                    }
+                }, 1000);
+                
+            } catch (error) {
+                console.error('Critical error in initializeChat:', error);
+                // Ultimate fallback - try complete reinitialization
+                setTimeout(() => {
+                    console.log('Attempting complete reinitialization...');
+                    initializeChat();
+                }, 3000);
+            }
+        }
+        
+        // Multiple initialization triggers for reliability
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeChat);
+        } else {
+            initializeChat();
+        }
+        
+        // Backup initialization
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const chatMessages = document.querySelector('.chat-messages');
+                if (chatMessages && chatMessages.children.length === 0) {
+                    console.log('Backup initialization triggered');
+                    initializeChat();
+                }
+            }, 2000);
+        });
+        
+        // Scroll-triggered animation for large cards
+        function initializeScrollAnimations() {
+            const processSteps = document.querySelectorAll('.process-step');
+            
+            if (processSteps.length === 0) {
+                console.log('No process steps found for scroll animation');
+                return;
+            }
+            
+            // Set up intersection observer for scroll-triggered animations
+            const observerOptions = {
+                threshold: 0.2, // Trigger when 20% of element is visible
+                rootMargin: '0px 0px -50px 0px' // Start animation 50px before element enters viewport
+            };
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        // Add animation class when element comes into view
+                        entry.target.classList.add('animate-in');
+                        
+                        // Add staggered delay for visual elements within the card
+                        const stepVisual = entry.target.querySelector('.step-visual');
+                        const stepText = entry.target.querySelector('.step-text');
+                        
+                        if (stepVisual) {
+                            stepVisual.style.animationDelay = '0.2s';
+                            stepVisual.style.animation = 'fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards';
+                        }
+                        
+                        if (stepText) {
+                            stepText.style.animationDelay = '0.4s';
+                            stepText.style.animation = 'fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards';
+                        }
+                        
+                        // Animate feature tags with staggered timing
+                        const featureTags = entry.target.querySelectorAll('.tag');
+                        featureTags.forEach((tag, index) => {
+                            tag.style.animationDelay = `${0.6 + (index * 0.1)}s`;
+                            tag.style.animation = 'fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards';
+                        });
+                        
+                        // Add CAD parser parsing log animation for step 1
+                        if (entry.target.dataset.step === '1') {
+                            const logLines = entry.target.querySelectorAll('.log-line');
+                            logLines.forEach((line, index) => {
+                                const delay = parseInt(line.dataset.delay) || (index * 300);
+                                setTimeout(() => {
+                                    line.classList.add('animate');
+                                }, delay + 600); // Add 600ms base delay to start after visual elements
+                            });
+                        }
+                        
+                        // Add contextual memory graph looping animation for step 2
+                        if (entry.target.dataset.step === '2') {
+                            const mockup = entry.target.querySelector('.contextual-memory-mockup');
+                            
+                            function startLoopingAnimation() {
+                                // Add looping class to trigger CSS animations
+                                mockup.classList.add('looping');
+                                
+                                // Schedule next loop - total duration 8 seconds (6s animation + 2s hold)
+                                setTimeout(() => {
+                                    mockup.classList.remove('looping');
+                                    // Small delay before restarting
+                                    setTimeout(startLoopingAnimation, 100);
+                                }, 8000);
+                            }
+                            
+                            // Start the looping animation after initial delay
+                            setTimeout(startLoopingAnimation, 600);
+                        }
+                        
+                        // Add QA interface animation for step 3 (runs once)
+                        if (entry.target.dataset.step === '3') {
+                            const mockup = entry.target.querySelector('.qa-interface-mockup');
+                            const messages = mockup.querySelectorAll('.message-bubble');
+                            const typingIndicator = mockup.querySelector('.typing-indicator');
+                            
+                            // Helper function for typewriter effect
+                            function typewriterEffect(element, text, speed) {
+                                if (!element || !text) return;
+                                
+                                // Clear any existing intervals
+                                if (element._typewriterInterval) {
+                                    clearInterval(element._typewriterInterval);
+                                }
+                                
+                                element.textContent = '';
+                                element.classList.add('typing');
+                                
+                                let i = 0;
+                                element._typewriterInterval = setInterval(() => {
+                                    if (i < text.length) {
+                                        element.textContent = text.substring(0, i + 1);
+                                        i++;
+                                    } else {
+                                        clearInterval(element._typewriterInterval);
+                                        element._typewriterInterval = null;
+                                        element.classList.remove('typing');
+                                    }
+                                }, speed);
+                            }
+                            
+                            // Helper function for typing dots animation
+                            function animateTypingDots(indicator) {
+                                const dots = indicator.querySelectorAll('.typing-dot');
+                                dots.forEach((dot, index) => {
+                                    dot.style.animation = `typingDots 1s ease-in-out ${index * 0.2}s infinite`;
+                                });
+                            }
+                            
+                            // Add looping class for CSS animations
+                            mockup.classList.add('looping');
+                            
+                            // Animation sequence (runs once with proper timing)
+                            setTimeout(() => {
+                                // First user message appears
+                                messages[0].classList.add('animate');
+                            }, 1000);
+                            
+                            setTimeout(() => {
+                                // First AI response types in
+                                messages[1].classList.add('animate');
+                                const text1 = messages[1].getAttribute('data-text');
+                                typewriterEffect(messages[1], text1, 30);
+                            }, 1500);
+                            
+                            setTimeout(() => {
+                                // Second user message appears (after first AI response is done)
+                                messages[2].classList.add('animate');
+                            }, 4000);
+                            
+                            setTimeout(() => {
+                                // Show typing indicator
+                                typingIndicator.style.opacity = '1';
+                                animateTypingDots(typingIndicator);
+                            }, 4500);
+                            
+                            setTimeout(() => {
+                                // Hide typing indicator and show AI response
+                                typingIndicator.style.opacity = '0';
+                                messages[4].classList.add('animate');
+                                const text2 = messages[4].getAttribute('data-text');
+                                typewriterEffect(messages[4], text2, 50);
+                            }, 5000);
+                            
+                            setTimeout(() => {
+                                // Final AI insight appears
+                                messages[5].classList.add('animate');
+                                messages[5].style.transition = 'all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)';
+                            }, 7500);
+                        }
+                        
+                        // Add system intelligence dashboard for step 4
+                        if (entry.target.dataset.step === '4') {
+                            const mockup = entry.target.querySelector('.system-intelligence-mockup');
+                            const toleranceBars = mockup.querySelectorAll('.tolerance-bar');
+                            const gaugeCircle = mockup.querySelector('.gauge-circle');
+                            const summaryItems = mockup.querySelectorAll('.summary-item');
+                            const riskItems = mockup.querySelectorAll('.risk-list li');
+                            
+                            // Helper function for console typewriter effect
+                            function consoleType(element, text, speed) {
+                                element.textContent = '';
+                                element.style.filter = 'blur(0.5px)';
+                                let i = 0;
+                                const timer = setInterval(() => {
+                                    if (i < text.length) {
+                                        element.textContent += text.charAt(i);
+                                        i++;
+                                    } else {
+                                        clearInterval(timer);
+                                        element.style.filter = 'blur(0)';
+                                    }
+                                }, speed);
+                            }
+                            
+                            // Helper function for confidence gauge animation
+                            function animateGauge(element, targetPercent) {
+                                const startAngle = 0;
+                                const endAngle = (targetPercent / 100) * 360;
+                                let currentAngle = 0;
+                                
+                                const animateStep = () => {
+                                    if (currentAngle < endAngle) {
+                                        currentAngle += 3;
+                                        element.style.background = `conic-gradient(#2DA58A 0deg, #2DA58A ${currentAngle}deg, rgba(0, 0, 0, 0.1) ${currentAngle}deg)`;
+                                        requestAnimationFrame(animateStep);
+                                    }
+                                };
+                                
+                                requestAnimationFrame(animateStep);
+                            }
+                            
+                            // Helper function for count-up animation
+                            function countUp(element, targetValue, suffix = '', duration = 1000) {
+                                const startValue = 0;
+                                const startTime = performance.now();
+                                
+                                const animate = (currentTime) => {
+                                    const elapsed = currentTime - startTime;
+                                    const progress = Math.min(elapsed / duration, 1);
+                                    const currentValue = Math.floor(startValue + (targetValue - startValue) * progress);
+                                    
+                                    element.textContent = currentValue + suffix;
+                                    
+                                    if (progress < 1) {
+                                        requestAnimationFrame(animate);
+                                    }
+                                };
+                                
+                                requestAnimationFrame(animate);
+                            }
+                            
+                            // Start diagnostic sequence
+                            mockup.classList.add('booting');
+                            
+                            // 1. Title types in (console style)
+                            setTimeout(() => {
+                                const titleElement = mockup.querySelector('.file-title');
+                                consoleType(titleElement, 'cadence-summary-v4.report', 60);
+                            }, 500);
+                            
+                            // 2. Summary items appear with count-up animations
+                            setTimeout(() => {
+                                // Project name
+                                const projectValue = summaryItems[0].querySelector('.summary-value');
+                                consoleType(projectValue, 'motor-mount-v4', 80);
+                            }, 1200);
+                            
+                            setTimeout(() => {
+                                // Part count with count-up
+                                const partValue = summaryItems[1].querySelector('.summary-value');
+                                countUp(partValue, 34, ' components', 800);
+                            }, 1600);
+                            
+                            setTimeout(() => {
+                                // Assembly count with count-up
+                                const assemblyValue = summaryItems[2].querySelector('.summary-value');
+                                countUp(assemblyValue, 6, ' assemblies', 600);
+                            }, 2000);
+                            
+                            // 3. Tolerance bars grow with data visualization
+                            setTimeout(() => {
+                                toleranceBars.forEach((bar, index) => {
+                                    setTimeout(() => {
+                                        bar.classList.add('animate');
+                                    }, index * 300);
+                                });
+                            }, 2400);
+                            
+                            // 4. Risk items type in like console logs
+                            setTimeout(() => {
+                                riskItems.forEach((item, index) => {
+                                    setTimeout(() => {
+                                        item.style.opacity = '1';
+                                        item.style.transform = 'translateX(0)';
+                                        consoleType(item, item.textContent, 40);
+                                    }, index * 500);
+                                });
+                            }, 3200);
+                            
+                            // 5. Confidence gauge animates from 0% to 85%
+                            setTimeout(() => {
+                                animateGauge(gaugeCircle, 85);
+                            }, 4000);
+                            
+                            // 6. Final status confirmation
+                            setTimeout(() => {
+                                const statusTag = mockup.querySelector('.status-tag');
+                                statusTag.textContent = 'Final Report Ready ✅';
+                                statusTag.style.background = 'linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(52, 211, 153, 0.15))';
+                                statusTag.style.color = '#10b981';
+                                statusTag.style.transform = 'scale(1.05)';
+                                
+                                setTimeout(() => {
+                                    statusTag.style.transform = 'scale(1)';
+                                }, 200);
+                            }, 5000);
+                        }
+                        
+                        // Unobserve after animation to prevent re-triggering
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+            
+            // Start observing all process steps
+            processSteps.forEach(step => {
+                observer.observe(step);
+            });
+            
+            console.log(`Scroll animation initialized for ${processSteps.length} process steps`);
+        }
+        
+        // Initialize scroll animations after DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeScrollAnimations);
+        } else {
+            initializeScrollAnimations();
+        }
+        
+        // Backup initialization for scroll animations
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const processSteps = document.querySelectorAll('.process-step');
+                if (processSteps.length > 0 && !processSteps[0].classList.contains('animate-in')) {
+                    console.log('Backup scroll animation initialization triggered');
+                    initializeScrollAnimations();
+                }
+            }, 500);
+        });
+    </script>
+</body>
+</html>
