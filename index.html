@@ -2544,7 +2544,7 @@
         let currentQuestionIndex = 0;
         let chatCycleCount = 0;
         let messageCounter = 0;
-        let isTabActive = true; // Start as active to allow initial load (Arc browser fix)
+        // Removed tab visibility tracking for more reliable operation
         let animationQueue = [];
         let hasStarted = false;
         
@@ -2559,7 +2559,7 @@
                 text: "What's the torque spec for the left shaft?",
                 file: "left-shaft-assembly-v2.step",
                 response: "Left shaft torque specification is 32Nm ± 2Nm.<br>Material: Steel Grade A36 with thread pitch M12x1.75.<br>Critical clearance: 0.25mm from housing edge.",
-                timeSaved: "42 min"
+                timeSaved: "38 min"
             },
             {
                 text: "Which part connects to the load bearing?",
@@ -2716,39 +2716,34 @@
             chatMessages.appendChild(aiResponse);
             
             // Animate user message
-            safeTimeout(() => {
-                if (!isTabActive) return;
+            setTimeout(() => {
                 userMessage.style.opacity = '1';
                 userMessage.style.animation = 'messageIn 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards';
                 requestAnimationFrame(() => smoothScrollToBottom(chatInterface));
-            }, 800);
+            }, 400);
             
             // Show context indicator
-            safeTimeout(() => {
-                if (!isTabActive) return;
+            setTimeout(() => {
                 const contextIndicator = userMessage.querySelector('.context-indicator');
                 contextIndicator.style.opacity = '1';
                 contextIndicator.style.animation = 'fadeIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards';
                 requestAnimationFrame(() => smoothScrollToBottom(chatInterface));
-            }, 1400);
+            }, 700);
             
             // Show typing indicator
-            safeTimeout(() => {
-                if (!isTabActive) return;
+            setTimeout(() => {
                 aiTyping.style.opacity = '1';
                 aiTyping.style.animation = 'messageIn 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards';
                 requestAnimationFrame(() => smoothScrollToBottom(chatInterface));
-            }, 2200);
+            }, 1100);
             
             // Hide typing indicator and show response
-            safeTimeout(() => {
-                if (!isTabActive) return;
+            setTimeout(() => {
                 aiTyping.style.opacity = '0';
                 aiTyping.style.animation = 'messageOut 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards';
                 
                 // Show AI response container and start typing simultaneously
-                safeTimeout(() => {
-                    if (!isTabActive) return;
+                setTimeout(() => {
                     aiResponse.style.opacity = '1';
                     aiResponse.style.animation = 'messageIn 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards';
                     requestAnimationFrame(() => smoothScrollToBottom(chatInterface));
@@ -2814,7 +2809,7 @@
                         if (scrollInterval) clearInterval(scrollInterval);
                         scrollInterval = setInterval(() => {
                             try {
-                                if (!isTabActive || !document.contains(chatInterface)) {
+                                if (!document.contains(chatInterface)) {
                                     clearInterval(scrollInterval);
                                     scrollInterval = null;
                                     return;
@@ -2831,17 +2826,15 @@
                     startScrollInterval();
                     
                     // Show source reference
-                    safeTimeout(() => {
-                        if (!isTabActive) return;
+                    setTimeout(() => {
                         const sourceRef = aiResponse.querySelector('.source-reference');
                         sourceRef.style.opacity = '1';
                         sourceRef.style.animation = 'fadeIn 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards';
                         requestAnimationFrame(() => smoothScrollToBottom(chatInterface));
-                    }, 4000);
+                    }, 2000);
                     
                     // Show time saved badge
-                    safeTimeout(() => {
-                        if (!isTabActive) return;
+                    setTimeout(() => {
                         const badge = aiResponse.querySelector('.chat-badge');
                         badge.style.opacity = '1';
                         badge.style.animation = 'fadeIn 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards';
@@ -2850,18 +2843,17 @@
                             clearInterval(scrollInterval);
                             scrollInterval = null;
                         }
-                    }, 4800);
+                    }, 2400);
                     
                     // Move to next question after response is complete
                     setTimeout(() => {
-                        console.log('7-second timeout fired!');
-                        console.log('Tab active status:', isTabActive);
+                        console.log('3.5-second timeout fired!');
                         console.log('Before increment - currentQuestionIndex:', currentQuestionIndex);
                         
                         // Mark as started after first message completes
                         if (!hasStarted) {
                             hasStarted = true;
-                            console.log('🚀 Chat startup complete - tab-aware mode enabled');
+                            console.log('🚀 Chat startup complete');
                         }
                         
                         currentQuestionIndex++;
@@ -2874,10 +2866,10 @@
                         console.log('Total questions available:', questions.length);
                         console.log('Adding next question...');
                         addNextQuestion();
-                    }, 7000);
+                    }, 3500);
                     
-                }, 200);
-            }, 3400);
+                }, 100);
+            }, 1700);
             } catch (error) {
                 console.error('Critical error in addNextQuestion:', error);
                 // Emergency recovery - try again in 5 seconds
@@ -2890,34 +2882,7 @@
             }
         }
         
-        // Tab visibility handling (more intelligent for Arc browser)
-        document.addEventListener('visibilitychange', function() {
-            const wasActive = isTabActive;
-            isTabActive = !document.hidden;
-            
-            console.log('Tab visibility changed:', isTabActive ? 'active' : 'inactive');
-            
-            // Only clear timeouts if chat has fully started and tab becomes truly inactive
-            if (!isTabActive && hasStarted && wasActive) {
-                console.log('Clearing timeouts due to tab becoming inactive');
-                clearAllTimeouts();
-            }
-        });
-        
-        let timeoutIds = [];
-        
-        function safeTimeout(callback, delay) {
-            // Allow execution during startup phase even if tab appears inactive (Arc browser fix)
-            if (!isTabActive && hasStarted) return;
-            const timeoutId = setTimeout(callback, delay);
-            timeoutIds.push(timeoutId);
-            return timeoutId;
-        }
-        
-        function clearAllTimeouts() {
-            timeoutIds.forEach(id => clearTimeout(id));
-            timeoutIds = [];
-        }
+        // Removed tab visibility checks for more reliable operation
         
         // Ultra-robust initialization with comprehensive safety checks
         function initializeChat() {
@@ -2944,15 +2909,12 @@
                 currentQuestionIndex = 0;
                 messageCounter = 0;
                 chatCycleCount = 0;
-                hasStarted = false; // Allow startup even if tab seems inactive
-                isTabActive = true; // Start optimistic for Arc browser
+                hasStarted = false;
                 
-                console.log('Tab active:', isTabActive);
                 console.log('Questions available:', questions.length);
                 
-                // Clear any existing content and intervals
+                // Clear any existing content
                 chatMessages.innerHTML = '';
-                clearAllTimeouts();
                 
                 // Ensure CSS is loaded
                 const computedStyle = window.getComputedStyle(chatInterface);
