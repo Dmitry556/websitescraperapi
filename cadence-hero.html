@@ -3114,46 +3114,72 @@
                                 });
                             }
                             
+                            // Reset all messages to initial state
+                            function resetAnimation() {
+                                messages.forEach(msg => {
+                                    msg.classList.remove('animate');
+                                    msg.textContent = msg.getAttribute('data-text') || msg.textContent;
+                                    if (msg._typewriterInterval) {
+                                        clearInterval(msg._typewriterInterval);
+                                        msg._typewriterInterval = null;
+                                    }
+                                });
+                                typingIndicator.style.opacity = '0';
+                            }
+                            
                             // Add looping class for CSS animations
                             mockup.classList.add('looping');
                             
-                            // Animation sequence (runs once with proper timing)
-                            setTimeout(() => {
-                                // First user message appears
-                                messages[0].classList.add('animate');
-                            }, 1000);
+                            // Animation sequence function
+                            function runAnimationSequence() {
+                                // Reset all animations first
+                                resetAnimation();
+                                
+                                setTimeout(() => {
+                                    // First user message appears
+                                    messages[0].classList.add('animate');
+                                }, 1000);
+                                
+                                setTimeout(() => {
+                                    // First AI response types in
+                                    messages[1].classList.add('animate');
+                                    const text1 = messages[1].getAttribute('data-text');
+                                    typewriterEffect(messages[1], text1, 30);
+                                }, 1500);
+                                
+                                setTimeout(() => {
+                                    // Second user message appears (after first AI response is done)
+                                    messages[2].classList.add('animate');
+                                }, 4000);
+                                
+                                setTimeout(() => {
+                                    // Show typing indicator
+                                    typingIndicator.style.opacity = '1';
+                                    animateTypingDots(typingIndicator);
+                                }, 4500);
+                                
+                                setTimeout(() => {
+                                    // Hide typing indicator and show AI response
+                                    typingIndicator.style.opacity = '0';
+                                    messages[4].classList.add('animate');
+                                    const text2 = messages[4].getAttribute('data-text');
+                                    typewriterEffect(messages[4], text2, 50);
+                                }, 5000);
+                                
+                                setTimeout(() => {
+                                    // Final AI insight appears
+                                    messages[5].classList.add('animate');
+                                    messages[5].style.transition = 'all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)';
+                                }, 7500);
+                                
+                                // Schedule next loop
+                                setTimeout(() => {
+                                    runAnimationSequence();
+                                }, 12000); // Reset and loop after 12 seconds
+                            }
                             
-                            setTimeout(() => {
-                                // First AI response types in
-                                messages[1].classList.add('animate');
-                                const text1 = messages[1].getAttribute('data-text');
-                                typewriterEffect(messages[1], text1, 30);
-                            }, 1500);
-                            
-                            setTimeout(() => {
-                                // Second user message appears (after first AI response is done)
-                                messages[2].classList.add('animate');
-                            }, 4000);
-                            
-                            setTimeout(() => {
-                                // Show typing indicator
-                                typingIndicator.style.opacity = '1';
-                                animateTypingDots(typingIndicator);
-                            }, 4500);
-                            
-                            setTimeout(() => {
-                                // Hide typing indicator and show AI response
-                                typingIndicator.style.opacity = '0';
-                                messages[4].classList.add('animate');
-                                const text2 = messages[4].getAttribute('data-text');
-                                typewriterEffect(messages[4], text2, 50);
-                            }, 5000);
-                            
-                            setTimeout(() => {
-                                // Final AI insight appears
-                                messages[5].classList.add('animate');
-                                messages[5].style.transition = 'all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)';
-                            }, 7500);
+                            // Start the looping animation
+                            runAnimationSequence();
                         }
                         
                         // Add system intelligence dashboard for step 4
