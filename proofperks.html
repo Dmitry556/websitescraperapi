@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProofPerks - Turn reviews, comments & DMs into repeat revenue</title>
+    <meta name="description" content="Shopify loyalty tool that rewards shoppers and fans for reviews, comments, and engagement. Built by merchants, for merchants.">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="ProofPerks - Turn reviews, comments & DMs into repeat revenue">
+    <meta property="og:description" content="Shopify loyalty tool that rewards shoppers and fans for reviews, comments, and engagement. Built by merchants, for merchants.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://proofperks.com">
+    <meta property="og:image" content="https://proofperks.com/og.png">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="ProofPerks - Turn reviews, comments & DMs into repeat revenue">
+    <meta name="twitter:description" content="Shopify loyalty tool that rewards shoppers and fans for reviews, comments, and engagement. Built by merchants, for merchants.">
+    <meta name="twitter:image" content="https://proofperks.com/og.png">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234F46E5' stroke-width='2'><path d='M20 7h-3V6a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v14a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-1h3a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1zM6 6a1 1 0 0 1 1-1h7a1 1 0 0 1 1 1v1H6V6zm9 14a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V9h9v11z'/></svg>">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['Inter', 'system-ui', 'sans-serif'],
+                        'cabinet': ['Cabinet Grotesk', 'sans-serif'],
+                        'mori': ['PP Mori', 'sans-serif'],
+                        'geist': ['Geist', 'sans-serif']
+                    },
+                    colors: {
+                        'glimps-red': '#ff5019',
+                        'glimps-dark': '#021b21',
+                        'glimps-light': '#f7f4f2'
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        .noise-overlay {
+            background-image: url('data:image/png;base64,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');
+            mask-image: radial-gradient(70% 60% at 50% 60%, black 30%, transparent);
+            mix-blend-mode: overlay;
+            opacity: 0.12;
+        }
+        
+        .gradient-mask {
+            mask-image: linear-gradient(to bottom, transparent, black 20%, black 80%, transparent);
+        }
+        
+        @keyframes fade-in-up {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .animate-fade-in-up {
+            animation: fade-in-up 0.8s ease-out forwards;
+            opacity: 0;
+        }
+    </style>
+</head>
+<body class="font-sans bg-[#f7f7f9] min-h-screen">
+    <!-- Global Frame -->
+    <div class="mx-auto max-w-[1440px] px-6">
+        
+        <!-- Navbar -->
+        <nav class="py-5 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <svg class="w-8 h-8" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M16 2L24 8V16L16 30L8 16V8L16 2Z" fill="#ff5019" stroke="#ff5019" stroke-width="2" stroke-linejoin="round"/>
+                    <circle cx="16" cy="12" r="3" fill="white"/>
+                    <path d="M13 20L16 17L19 20" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span class="text-2xl font-bold text-gray-900">ProofPerks</span>
+            </div>
+            
+            <div class="hidden md:flex items-center gap-10">
+                <a href="#" class="text-gray-700 hover:text-gray-900 transition-colors">Product</a>
+                <a href="#" class="text-gray-700 hover:text-gray-900 transition-colors">Pricing</a>
+                <div class="flex items-center gap-1 text-gray-700 hover:text-gray-900 transition-colors">
+                    <span>Resources</span>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </div>
+            </div>
+            
+            <a href="#waitlist" class="bg-orange-500 text-white rounded-lg px-5 py-2 hover:bg-orange-600 transition-colors font-semibold">
+                Get Access
+            </a>
+        </nav>
+
+        <!-- Hero Section -->
+        <section class="relative mx-auto mt-4 mb-16 rounded-[32px] overflow-hidden max-w-[1200px] bg-cover bg-no-repeat text-white px-10 md:px-16 pt-20 pb-16" style="background-image: url('./jemo-bg-003.png'); background-position: 50% 35%;">
+            <!-- Exact Jemo overlay -->
+            <div class="absolute inset-0 bg-black/15 rounded-[32px]"></div>
+            
+            <div class="relative z-10 text-center">
+                <!-- Pill label -->
+                <div class="mb-8 animate-fade-in-up" style="animation-delay:0.1s">
+                    <span class="inline-flex items-center h-7 px-4 rounded-full bg-white/10 border border-white/20 text-xs font-medium tracking-wide text-white backdrop-blur-sm">
+                        SHOPIFY LOYALTY TOOL
+                    </span>
+                </div>
+                
+                <!-- Main headline -->
+                <h1 class="text-[52px] md:text-[68px] font-mori font-semibold leading-[1.1] tracking-tight mb-6 max-w-[860px] mx-auto animate-fade-in-up text-white" style="animation-delay:0.2s">
+                    Turn reviews, comments<br/>& DMs into<br/>repeat revenue
+                </h1>
+                
+                <!-- Subheadline -->
+                <p class="text-xl md:text-2xl font-normal text-white/95 max-w-[640px] mx-auto mt-6 mb-12 animate-fade-in-up" style="animation-delay:0.3s">
+                    ProofPerks rewards shoppers <em>and</em> fans for actions like Trustpilot reviews, IG comments or Discord chats—even before they buy.
+                </p>
+                
+                <!-- Primary CTA -->
+                <div class="animate-fade-in-up max-w-lg mx-auto" style="animation-delay:0.4s">
+                    <div class="mb-6 text-center">
+                        <p class="text-white/90 text-sm font-medium mb-3">Help us create perfect pricing for your business size</p>
+                    </div>
+                    
+                    <form id="hero-form" class="space-y-4">
+                        <input 
+                            type="email" 
+                            id="hero-email" 
+                            name="email" 
+                            required 
+                            placeholder="Enter your email"
+                            class="w-full px-6 py-3 rounded-lg bg-white/90 backdrop-blur-sm text-gray-900 placeholder-gray-500 border-0 focus:ring-2 focus:ring-white/50 focus:bg-white transition-all font-mori"
+                        >
+                        
+                        <div class="space-y-3">
+                            <label class="block text-white/90 text-sm font-medium">How many orders do you get per month?</label>
+                            <select 
+                                id="hero-orders" 
+                                name="orders" 
+                                required
+                                class="w-full px-6 py-3 rounded-lg bg-white/90 backdrop-blur-sm text-gray-900 border-0 focus:ring-2 focus:ring-white/50 focus:bg-white transition-all font-mori"
+                            >
+                                <option value="" disabled selected>Select range</option>
+                                <option value="0-50">0-50 orders</option>
+                                <option value="50-200">50-200 orders</option>
+                                <option value="200-1000">200-1,000 orders</option>
+                                <option value="1000+">1,000+ orders</option>
+                            </select>
+                        </div>
+                        
+                        <div class="space-y-3">
+                            <label class="block text-white/90 text-sm font-medium">What's your monthly revenue?</label>
+                            <select 
+                                id="hero-revenue" 
+                                name="revenue" 
+                                required
+                                class="w-full px-6 py-3 rounded-lg bg-white/90 backdrop-blur-sm text-gray-900 border-0 focus:ring-2 focus:ring-white/50 focus:bg-white transition-all font-mori"
+                            >
+                                <option value="" disabled selected>Select range</option>
+                                <option value="0-10k">$0-10k</option>
+                                <option value="10k-50k">$10k-50k</option>
+                                <option value="50k-200k">$50k-200k</option>
+                                <option value="200k+">$200k+</option>
+                            </select>
+                        </div>
+                        
+                        <div class="space-y-3">
+                            <label class="block text-white/90 text-sm font-medium">What would you budget for a loyalty tool?</label>
+                            <select 
+                                id="hero-budget" 
+                                name="budget" 
+                                required
+                                class="w-full px-6 py-3 rounded-lg bg-white/90 backdrop-blur-sm text-gray-900 border-0 focus:ring-2 focus:ring-white/50 focus:bg-white transition-all font-mori"
+                            >
+                                <option value="" disabled selected>Select budget</option>
+                                <option value="0-50">$0-50/month</option>
+                                <option value="50-200">$50-200/month</option>
+                                <option value="200-500">$200-500/month</option>
+                                <option value="500+">$500+/month</option>
+                            </select>
+                        </div>
+                        
+                        <button 
+                            type="submit"
+                            class="w-full inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-gray-900 rounded-lg font-semibold shadow-md hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5 font-mori text-lg"
+                        >
+                            <span>Join the waitlist</span>
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                            </svg>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <div class="max-w-4xl mx-auto mt-20 mb-20">
+            <h2 class="text-4xl md:text-5xl font-mori font-semibold text-gray-900 text-center mb-16">Frequently Asked Questions</h2>
+            
+            <div class="space-y-4">
+                <div class="bg-white/60 backdrop-blur-sm rounded-3xl shadow-lg border border-white/20 overflow-hidden transition-all duration-300 hover:shadow-xl hover:bg-white/80">
+                    <button class="faq-toggle w-full px-8 py-6 text-left flex items-center justify-between hover:bg-white/30 transition-all duration-300" data-target="faq1">
+                        <h3 class="font-mori font-semibold text-gray-900 text-xl">What exactly is ProofPerks?</h3>
+                        <svg class="w-6 h-6 text-gray-600 transition-all duration-300 ease-out" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div id="faq1" class="faq-content hidden">
+                        <div class="px-8 pb-6 pt-2">
+                            <p class="text-gray-700 leading-relaxed font-mori text-lg">ProofPerks is a custom-built loyalty program that connects to any Shopify website as a subdomain. It allows both customers and non-purchasers to earn loyalty points that can be redeemed for discount codes and tier-based lifetime perks.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white/60 backdrop-blur-sm rounded-3xl shadow-lg border border-white/20 overflow-hidden transition-all duration-300 hover:shadow-xl hover:bg-white/80">
+                    <button class="faq-toggle w-full px-8 py-6 text-left flex items-center justify-between hover:bg-white/30 transition-all duration-300" data-target="faq2">
+                        <h3 class="font-mori font-semibold text-gray-900 text-xl">How do customers earn loyalty points?</h3>
+                        <svg class="w-6 h-6 text-gray-600 transition-all duration-300 ease-out" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div id="faq2" class="faq-content hidden">
+                        <div class="px-8 pb-6 pt-2">
+                            <p class="text-gray-700 leading-relaxed font-mori text-lg mb-4">Customers and fans can earn points through various engagement activities:</p>
+                            <ul class="text-gray-700 space-y-3 ml-6 font-mori text-lg">
+                                <li>• Commenting on your Instagram posts</li>
+                                <li>• Messaging in your Discord community</li>
+                                <li>• Leaving Trustpilot reviews</li>
+                                <li>• Writing reviews on any review website</li>
+                                <li>• Even before making their first purchase</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white/60 backdrop-blur-sm rounded-3xl shadow-lg border border-white/20 overflow-hidden transition-all duration-300 hover:shadow-xl hover:bg-white/80">
+                    <button class="faq-toggle w-full px-8 py-6 text-left flex items-center justify-between hover:bg-white/30 transition-all duration-300" data-target="faq3">
+                        <h3 class="font-mori font-semibold text-gray-900 text-xl">What can points be redeemed for?</h3>
+                        <svg class="w-6 h-6 text-gray-600 transition-all duration-300 ease-out" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div id="faq3" class="faq-content hidden">
+                        <div class="px-8 pb-6 pt-2">
+                            <p class="text-gray-700 leading-relaxed font-mori text-lg mb-4">Points can be redeemed for:</p>
+                            <ul class="text-gray-700 space-y-3 ml-6 font-mori text-lg">
+                                <li>• Discount codes for immediate savings</li>
+                                <li>• Tier upgrades with lifetime discounts</li>
+                                <li>• Priority shipping benefits</li>
+                                <li>• Exclusive perks based on loyalty level</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white/60 backdrop-blur-sm rounded-3xl shadow-lg border border-white/20 overflow-hidden transition-all duration-300 hover:shadow-xl hover:bg-white/80">
+                    <button class="faq-toggle w-full px-8 py-6 text-left flex items-center justify-between hover:bg-white/30 transition-all duration-300" data-target="faq4">
+                        <h3 class="font-mori font-semibold text-gray-900 text-xl">How does the tier system work?</h3>
+                        <svg class="w-6 h-6 text-gray-600 transition-all duration-300 ease-out" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div id="faq4" class="faq-content hidden">
+                        <div class="px-8 pb-6 pt-2">
+                            <p class="text-gray-700 leading-relaxed font-mori text-lg">Users level up to new tiers based on their accumulated loyalty points. Higher tiers unlock lifetime discounts, priority shipping, and exclusive perks that create long-term customer value and repeat engagement.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white/60 backdrop-blur-sm rounded-3xl shadow-lg border border-white/20 overflow-hidden transition-all duration-300 hover:shadow-xl hover:bg-white/80">
+                    <button class="faq-toggle w-full px-8 py-6 text-left flex items-center justify-between hover:bg-white/30 transition-all duration-300" data-target="faq5">
+                        <h3 class="font-mori font-semibold text-gray-900 text-xl">What results have you seen?</h3>
+                        <svg class="w-6 h-6 text-gray-600 transition-all duration-300 ease-out" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div id="faq5" class="faq-content hidden">
+                        <div class="px-8 pb-6 pt-2">
+                            <p class="text-gray-700 leading-relaxed font-mori text-lg mb-4">We used ProofPerks on our own company and achieved:</p>
+                            <ul class="text-gray-700 space-y-3 ml-6 font-mori text-lg">
+                                <li>• <strong>Trustpilot score improved from 3.6 to 4.5</strong></li>
+                                <li>• <strong>Discord became engaged and active daily</strong> - translating directly into sales</li>
+                                <li>• <strong>Significantly increased Instagram comment rates</strong></li>
+                                <li>• Created a thriving community that drives repeat revenue</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white/60 backdrop-blur-sm rounded-3xl shadow-lg border border-white/20 overflow-hidden transition-all duration-300 hover:shadow-xl hover:bg-white/80">
+                    <button class="faq-toggle w-full px-8 py-6 text-left flex items-center justify-between hover:bg-white/30 transition-all duration-300" data-target="faq6">
+                        <h3 class="font-mori font-semibold text-gray-900 text-xl">Is this ready for my store?</h3>
+                        <svg class="w-6 h-6 text-gray-600 transition-all duration-300 ease-out" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div id="faq6" class="faq-content hidden">
+                        <div class="px-8 pb-6 pt-2">
+                            <p class="text-gray-700 leading-relaxed font-mori text-lg">ProofPerks is currently in early version and invite-only. We're opening it up to a select few merchants to refine the product based on real-world usage before a wider launch. Zero risk, maximum upside.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Thought Leadership Article -->
+        <div class="max-w-4xl mx-auto mt-24 mb-20">
+            <article class="bg-white rounded-2xl p-8 md:p-12 shadow-sm border border-gray-100">
+                <!-- Article Header -->
+                <header class="mb-12">
+                    <div class="text-sm text-orange-600 font-medium mb-4 uppercase tracking-wider">Strategic Insight</div>
+                    <h1 class="text-4xl md:text-5xl font-mori font-bold text-gray-900 mb-6 leading-tight">
+                        Why Traditional Loyalty Programs Are Killing Your Brand
+                    </h1>
+                    <p class="text-xl text-gray-600 font-mori leading-relaxed max-w-3xl">
+                        The $200B loyalty industry has it backwards. Here's why rewarding purchases is the wrong strategy—and what leading brands do instead.
+                    </p>
+                </header>
+
+                <!-- Article Body -->
+                <div class="prose prose-lg max-w-none font-mori">
+                    <!-- Opening -->
+                    <div class="bg-gray-50 p-6 rounded-lg mb-8 border-l-4 border-orange-500">
+                        <p class="text-xl text-gray-800 m-0 italic">
+                            "Every day, another DTC brand launches a 'points for purchases' program. They're all making the same fatal mistake."
+                        </p>
+                    </div>
+
+                    <p class="text-lg text-gray-700 leading-relaxed mb-6">
+                        Traditional loyalty programs reward the <strong>outcome</strong> (a purchase) rather than the <strong>behaviors</strong> that create loyal customers. This creates a transactional relationship where customers only engage when they're ready to buy.
+                    </p>
+
+                    <h2 class="text-2xl font-semibold text-gray-900 mb-4 mt-8">The Hidden Cost of Transaction-Based Loyalty</h2>
+                    
+                    <p class="text-lg text-gray-700 leading-relaxed mb-6">
+                        When you only reward purchases, you're training customers to think of your brand as a vending machine. Insert money, get points. No relationship, no community, no emotional connection.
+                    </p>
+
+                    <!-- Simple comparison -->
+                    <div class="my-8 bg-gray-50 p-6 rounded-lg">
+                        <div class="grid md:grid-cols-2 gap-8">
+                            <div>
+                                <h4 class="font-semibold text-red-700 mb-3">❌ The Traditional Model</h4>
+                                <p class="text-gray-700 text-sm">Customer buys → Gets points → Redeems discount → Buys again (maybe)</p>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-green-700 mb-3">✅ The Engagement Model</h4>
+                                <p class="text-gray-700 text-sm">Customer engages → Builds relationship → Earns status → Becomes advocate → Buys repeatedly</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p class="text-lg text-gray-700 leading-relaxed mb-4">This model has three critical flaws:</p>
+                    
+                    <ol class="text-gray-700 space-y-2 mb-8">
+                        <li><strong>Late intervention:</strong> You're only engaging customers who are already converting</li>
+                        <li><strong>Price sensitivity:</strong> You're training customers to wait for discounts</li>
+                        <li><strong>Zero differentiation:</strong> Every loyalty program looks the same to customers</li>
+                    </ol>
+
+                    <h2 class="text-2xl font-semibold text-gray-900 mb-4 mt-8">The Engagement-First Revolution</h2>
+
+                    <p class="text-lg text-gray-700 leading-relaxed mb-6">
+                        Smart brands are flipping the script. Instead of rewarding outcomes, they're rewarding the <em>behaviors</em> that build relationships before customers buy.
+                    </p>
+
+                    <!-- Results showcase -->
+                    <div class="bg-blue-50 p-6 rounded-lg mb-8">
+                        <p class="text-center text-gray-800 mb-6 font-medium">When we implemented this approach for our own brand, the results were immediate:</p>
+                        
+                        <div class="grid md:grid-cols-3 gap-6 text-center">
+                            <div class="bg-white p-4 rounded-lg">
+                                <div class="text-2xl font-bold text-blue-600 mb-1">3.6 → 4.5</div>
+                                <div class="text-sm text-gray-600">Trustpilot Score</div>
+                            </div>
+                            <div class="bg-white p-4 rounded-lg">
+                                <div class="text-2xl font-bold text-blue-600 mb-1">300%</div>
+                                <div class="text-sm text-gray-600">Discord Engagement</div>
+                            </div>
+                            <div class="bg-white p-4 rounded-lg">
+                                <div class="text-2xl font-bold text-blue-600 mb-1">200%</div>
+                                <div class="text-sm text-gray-600">IG Comment Rate</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">What Engagement-First Actually Looks Like</h3>
+
+                    <p class="text-gray-700 mb-4">Instead of "spend $100, get 100 points," think:</p>
+
+                    <ul class="text-gray-700 space-y-2 mb-8 list-none pl-0">
+                        <li>• Leave a detailed product review → Earn points</li>
+                        <li>• Share product photos on social → Earn points</li>
+                        <li>• Join Discord community conversations → Earn points</li>
+                        <li>• Help other customers with questions → Earn points</li>
+                        <li>• Attend virtual events or product launches → Earn points</li>
+                    </ul>
+
+                    <p class="text-lg text-gray-700 leading-relaxed mb-8">
+                        This creates a flywheel: engagement drives social proof, social proof drives more customers, more customers drive more engagement.
+                    </p>
+
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">The Strategic Advantage</h3>
+
+                    <p class="text-gray-700 mb-6">Engagement-first loyalty programs create three competitive advantages:</p>
+
+                    <div class="space-y-4 mb-8">
+                        <div class="border-l-4 border-purple-400 pl-4">
+                            <h4 class="font-semibold text-gray-900 mb-1">Community Network Effects</h4>
+                            <p class="text-gray-700 text-sm">Each engaged customer makes your platform more valuable for every other customer</p>
+                        </div>
+                        <div class="border-l-4 border-blue-400 pl-4">
+                            <h4 class="font-semibold text-gray-900 mb-1">Authentic Social Proof</h4>
+                            <p class="text-gray-700 text-sm">Customers create genuine content because they're genuinely engaged, not just paid to post</p>
+                        </div>
+                        <div class="border-l-4 border-green-400 pl-4">
+                            <h4 class="font-semibold text-gray-900 mb-1">Data-Rich Customer Profiles</h4>
+                            <p class="text-gray-700 text-sm">You learn what customers <em>actually</em> care about, not just what they buy</p>
+                        </div>
+                    </div>
+
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">The Implementation Reality</h3>
+
+                    <p class="text-gray-700 leading-relaxed mb-4">
+                        Most brands know engagement-first makes sense but struggle with execution. The technical complexity of tracking cross-platform behaviors, managing point economies, and creating seamless user experiences has kept this strategy limited to enterprises with massive tech teams.
+                    </p>
+
+                    <p class="text-lg font-medium text-gray-900 mb-8">Until now.</p>
+
+                    <!-- Conclusion -->
+                    <div class="bg-orange-50 p-6 rounded-lg border border-orange-200 mt-8">
+                        <h4 class="text-lg font-semibold text-gray-900 mb-3">The Bottom Line</h4>
+                        <p class="text-gray-800 mb-3">
+                            Traditional loyalty programs optimize for short-term transactions. Engagement-first programs optimize for long-term relationships.
+                        </p>
+                        <p class="text-gray-800 font-medium">
+                            In a world where customer acquisition costs are rising and attention spans are shrinking, the brands that win will be the ones that turn customers into communities.
+                        </p>
+                    </div>
+                </div>
+            </article>
+        </div>
+        
+    </div>
+
+    <script>
+        // Hero form handling
+        document.getElementById('hero-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('hero-email').value;
+            const orders = document.getElementById('hero-orders').value;
+            const revenue = document.getElementById('hero-revenue').value;
+            const budget = document.getElementById('hero-budget').value;
+            
+            // Validate all fields
+            if (!email || !orders || !revenue || !budget) {
+                alert('Please fill in all fields');
+                return;
+            }
+            
+            // Validate email format
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                alert('Please enter a valid email address');
+                return;
+            }
+            
+            // Collect form data
+            const formData = {
+                email,
+                orders,
+                revenue,
+                budget
+            };
+            
+            // Send to API (stub)
+            fetch('https://example.com/api/waitlist', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            }).catch(() => {});
+            
+            // Show success feedback
+            alert('Thanks! We\'ll be in touch with pricing that makes sense for your business.');
+        });
+
+        // FAQ toggle functionality
+        document.querySelectorAll('.faq-toggle').forEach(button => {
+            button.addEventListener('click', function() {
+                const targetId = this.getAttribute('data-target');
+                const content = document.getElementById(targetId);
+                const arrow = this.querySelector('svg');
+                
+                // Toggle current FAQ with smooth animation
+                if (content.classList.contains('hidden')) {
+                    content.classList.remove('hidden');
+                    arrow.style.transform = 'rotate(180deg)';
+                    // Smooth slide down effect
+                    content.style.maxHeight = '0px';
+                    content.style.opacity = '0';
+                    content.style.overflow = 'hidden';
+                    content.style.transition = 'max-height 0.3s ease-out, opacity 0.3s ease-out';
+                    setTimeout(() => {
+                        content.style.maxHeight = content.scrollHeight + 'px';
+                        content.style.opacity = '1';
+                    }, 10);
+                } else {
+                    // Smooth slide up effect
+                    content.style.maxHeight = '0px';
+                    content.style.opacity = '0';
+                    setTimeout(() => {
+                        content.classList.add('hidden');
+                        content.style.maxHeight = '';
+                        content.style.opacity = '';
+                        content.style.overflow = '';
+                        content.style.transition = '';
+                    }, 300);
+                    arrow.style.transform = 'rotate(0deg)';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
