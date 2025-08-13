@@ -4,6 +4,9 @@
     "api/scrape.js": {
       "maxDuration": 5
     },
+    "api/quick-scrape.js": {
+      "maxDuration": 3
+    },
     "api/result.js": {
       "maxDuration": 5
     },

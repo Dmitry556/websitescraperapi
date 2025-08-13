@@ -1,0 +1,41 @@
+# WebsiteScraper v2 - Google Cloud Run Deployment Configuration
+# Uses your existing $300 credit for bulletproof API hosting
+
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: websitescraper-api
+  annotations:
+    run.googleapis.com/ingress: all
+    run.googleapis.com/execution-environment: gen2
+spec:
+  template:
+    metadata:
+      annotations:
+        run.googleapis.com/execution-environment: gen2
+        run.googleapis.com/cpu-throttling: "false"
+        run.googleapis.com/memory: "1Gi"
+        run.googleapis.com/cpu: "1000m"
+    spec:
+      containerConcurrency: 100
+      timeoutSeconds: 60
+      containers:
+      - image: gcr.io/PROJECT_ID/websitescraper-api:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: PORT
+          value: "8080"
+        - name: REDIS_URL
+          value: "rediss://default:AXrwAAIjcDFlYjhlNzM0YWY5ZWE0NzYxYTNiM2ZmZWQxYjUxZmYwOXAxMA@needed-dingo-31472.upstash.io:6379"
+        - name: SCRAPER_AUTH_TOKEN
+          value: "WSCRAPER_PROD_6q2dVNYxJ4"
+        - name: NODE_ENV
+          value: "production"
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 1Gi
+          requests:
+            cpu: 100m
+            memory: 256Mi
