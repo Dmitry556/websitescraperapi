@@ -1,0 +1,50 @@
+# Dependencies
+node_modules/
+*/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment files
+.env
+
+# Build outputs
+dist/
+*/dist/
+build/
+*/build/
+
+# Vercel deployment
+.vercel
+
+# Logs
+*.log
+worker.log
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Runtime files
+*.pid
+server.pid
+
+# Test files
+coverage/
+.nyc_output/
+
+# Cache directories
+.cache/
+.npm/
+.yarn/

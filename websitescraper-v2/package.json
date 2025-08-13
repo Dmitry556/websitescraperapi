@@ -1,0 +1,43 @@
+{
+  "name": "websitescraper-v2",
+  "version": "2.0.0",
+  "description": "Production-grade website scraper for Clay with Vercel API + Lenovo worker",
+  "main": "dist/worker/index.js",
+  "scripts": {
+    "build": "tsc",
+    "build:api": "cd api && npm run build",
+    "build:worker": "tsc -p worker/tsconfig.json",
+    "start:worker": "node dist/worker/index.js",
+    "dev:worker": "ts-node worker/src/index.ts",
+    "test": "jest",
+    "test:load": "node scripts/load-test.js",
+    "setup": "node scripts/setup.js",
+    "health": "node scripts/health-check.js"
+  },
+  "keywords": [
+    "scraper",
+    "clay",
+    "vercel",
+    "playwright",
+    "production"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^17.2.1",
+    "ioredis": "^5.3.2",
+    "node-cron": "^3.0.2",
+    "pidusage": "^3.0.2",
+    "pino": "^8.16.0",
+    "pino-pretty": "^10.2.0",
+    "playwright": "^1.40.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.8.0",
+    "@types/node-cron": "^3.0.8",
+    "@types/pidusage": "^2.0.5",
+    "jest": "^29.7.0",
+    "ts-node": "^10.9.0",
+    "typescript": "^5.2.0"
+  }
+}
